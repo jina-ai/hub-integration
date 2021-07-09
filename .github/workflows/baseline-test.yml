@@ -2,7 +2,7 @@ name: Integrated test
 
 on:
   schedule:
-    # * is a special character in YAML so you have to quote this string
+    # Every day 11:40 Shanghai time
     - cron:  '40 3 * * *'
   workflow_dispatch:
 

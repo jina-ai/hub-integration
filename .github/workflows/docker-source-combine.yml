@@ -1,13 +1,10 @@
 name: Docker source combine usage test
 
 on:
-  # schedule:
-  #   # * is a special character in YAML so you have to quote this string
-  #   - cron:  '0 0 * * *'
-  # workflow_dispatch:
-
-  push:
-    branches: [main]
+  schedule:
+    # Every day 11:40 Shanghai time
+    - cron:  '41 3 * * *'
+  workflow_dispatch:
 
 jobs:
   usage-test:
