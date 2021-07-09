@@ -1,0 +1,48 @@
+name: Docker source combine usage test
+
+on:
+  # schedule:
+  #   # * is a special character in YAML so you have to quote this string
+  #   - cron:  '0 0 * * *'
+  # workflow_dispatch:
+
+  push:
+    branches: [main]
+
+jobs:
+  usage-test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        python-version: ['3.7']
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install docker
+        if: ${{ startsWith(matrix.os, 'macos-') }}
+        uses: docker-practice/actions-setup-docker@master
+
+      - name: Clone latest jina code
+        uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina
+          token: ${{ secrets.JINA_DEV_BOT }}
+          ref: refs/heads/master
+          path: jina
+      
+      - name: pip install jina
+        working-directory: jina
+        run: pip install -e '.[standard]'
+
+      - run: docker version
+
+      - run: python docker-source-combine.py
+        
+
