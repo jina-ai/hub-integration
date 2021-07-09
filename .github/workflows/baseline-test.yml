@@ -32,7 +32,8 @@ jobs:
       JINA_HUBBLE_REGISTRY: http://localhost:3000
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Clone latest hubble code
+        uses: actions/checkout@v2
         with:
           repository: jina-ai/hubble
           token: ${{ secrets.JINA_DEV_BOT }}
@@ -54,6 +55,9 @@ jobs:
         working-directory: hubble
         run: |
           sed -i -e 's/image: jinahub\/hubble-normalizer:latest/build: normalizer/g' docker-compose.yml
+
+      - run: cat docker-compose.yml
+        working-directory: hubble
 
       - name: Start containers
         working-directory: hubble
