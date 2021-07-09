@@ -1,0 +1,132 @@
+name: Integrated test
+
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '40 3 * * *'
+  workflow_dispatch:
+  push: 
+    branches: [main]
+
+jobs:
+  integrated-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        python-version: ['3.7', '3.8', '3.9']
+        case-path:
+          - success/case1
+          - success/case2
+          - success/case3
+          # - success/case4
+          - success/case5
+          - success/case6
+          - success/case7
+          - success/case8
+          - success/case9
+
+    env:
+      NODE_ENV: testing
+      JINA_HUBBLE_REGISTRY: http://localhost:3000
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/hubble
+          token: ${{ secrets.JINA_DEV_BOT }}
+          ref: refs/heads/master
+          path: hubble
+
+      - name: Clone latest normalizer code
+        uses: actions/checkout@v2
+        with:
+          repository: jina-ai/executor-normalizer
+          token: ${{ secrets.JINA_DEV_BOT }}
+          ref: refs/heads/master
+          path: normalizer
+
+      - name: mk logs folder
+        run: mkdir logs
+
+      - name: Replace docker-compose.yml normalizer image with build
+        working-directory: hubble
+        run: |
+          sed -i -e 's/image: jinahub\/hubble-normalizer:latest/build: normalizer/g' docker-compose.yml
+
+      - name: Start containers
+        working-directory: hubble
+        run: docker-compose -f "docker-compose.yml" up -d --build
+
+      # Change the owner of /tmp/jina-uploaded from root to runner
+      - run: sudo chown -R $USER:$USER /tmp/jina-uploaded
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: yarn install --frozen-lockfile
+        working-directory: hubble
+      - run: npm run build --if-present
+        working-directory: hubble
+      - run: npm run start:prod > logs/server.log &
+        working-directory: hubble
+
+      - run: curl -v http://localhost:3000
+
+      - name: Use Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Clone latest jina code
+        uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina
+          token: ${{ secrets.JINA_DEV_BOT }}
+          ref: refs/heads/master
+          path: jina
+
+      - name: pip install jina
+        working-directory: jina
+        run: pip install -e '.[standard]'
+
+      - name: jina version
+        run: |
+          jina -vf
+          ls -al
+
+      - name: Clone latest case1-9 code
+        uses: actions/checkout@v2
+        with:
+          repository: jina-ai/executor-cases
+          ref: refs/heads/main
+          path: cases
+
+      - name: test case - ${{ matrix.case-path }}
+        id: do_test
+        run: jina hub push ${{ matrix.case-path }} | tee logs/build.log
+        working-directory: cases
+        
+      - name: extract id
+        id: extract_id
+        run: cat logs/build.log | grep ID | awk '{printf "::set-output name=id::%s\n", $3}'
+
+      - name: run executor
+        run: jina executor --uses jinahub://${{ steps.extract_id.outputs.id }} > logs/executor.log &
+
+      - name: detect executor
+        run: cat logs/executor.log | grep 'ready and listening'
+
+      - name: Archive server log results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: logs
+          path: logs
+
+      - name: Stop containers
+        if: always()
+        run: docker-compose -f "docker-compose.yml" down
