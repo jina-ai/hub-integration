@@ -56,11 +56,9 @@ jobs:
         run: |
           sed -i -e 's/image: jinahub\/hubble-normalizer:latest/build: normalizer/g' docker-compose.yml
 
-      - run: cat docker-compose.yml
-        working-directory: hubble
+      - run: mv hubble/docker-compose.yml docker-compose.yml
 
       - name: Start containers
-        working-directory: hubble
         run: docker-compose -f "docker-compose.yml" up -d --build
 
       # Change the owner of /tmp/jina-uploaded from root to runner
