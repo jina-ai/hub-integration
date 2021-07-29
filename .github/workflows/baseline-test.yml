@@ -85,7 +85,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: jina-ai/jina
-          token: ${{ secrets.JINA_DEV_BOT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           ref: refs/heads/master
           path: jina
 
