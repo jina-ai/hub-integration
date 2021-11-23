@@ -37,6 +37,7 @@ jobs:
           token: ${{ secrets.JINA_DEV_BOT }}
           ref: refs/heads/master
           path: hubble
+          lfs: true
 
       - name: Clone latest normalizer code
         uses: actions/checkout@v2
