@@ -77,7 +77,7 @@ jobs:
 
       - run: |
           status=1
-          for ((i=1;i<=10;i++));
+          for ((i=1;i<=30;i++));
           do
             curl --silent --fail http://localhost:3000
             status=$?
