@@ -81,7 +81,7 @@ jobs:
           do
             curl --silent --fail http://localhost:3000
             status=$?
-            if [ $status -eq 0 ]; then
+            if test $status = 0; then
               break
             fi
             sleep 2
