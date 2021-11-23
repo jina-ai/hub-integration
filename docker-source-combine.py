@@ -7,7 +7,7 @@ class MyExecutor(Executor):
     print('goodbye')
 
 
-f = Flow().add(uses='jinahub+docker://MiaoExec').add(uses='jinahub://MiaoExec').add(uses=MyExecutor)
+f = Flow().add(uses='jinahub+docker://MiaoTestExecutor1').add(uses='jinahub://MiaoTestExecutor1').add(uses=MyExecutor)
 
 with f:
   f.post('/', Document())
