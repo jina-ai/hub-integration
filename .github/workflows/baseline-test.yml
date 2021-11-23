@@ -87,6 +87,7 @@ jobs:
             sleep 2
           done
           exit $status
+        shell: bash {0}
 
       - name: Use Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
