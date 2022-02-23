@@ -1,4 +1,5 @@
-from jina import Flow, Document, requests, Executor
+from docarray import Document
+from jina import Flow, requests, Executor
 
 class MyExecutor(Executor):
 
@@ -7,7 +8,13 @@ class MyExecutor(Executor):
     print('goodbye')
 
 
-f = Flow().add(uses='jinahub+docker://MiaoTestExecutor1').add(uses='jinahub://MiaoTestExecutor1').add(uses=MyExecutor)
+f = Flow().add(
+  uses='jinahub+docker://Hello'
+).add(
+  uses='jinahub://Hello'
+).add(
+  uses=MyExecutor
+)
 
 with f:
   f.post('/', Document())
