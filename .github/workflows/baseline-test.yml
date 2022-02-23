@@ -13,17 +13,9 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        python-version: ['3.7', '3.8', '3.9']
+        python-version: ['3.7']
         case-path:
           - success/case1
-          - success/case2
-          - success/case3
-          # - success/case4
-          - success/case5
-          - success/case6
-          - success/case7
-          - success/case8
-          - success/case9
 
     env:
       NODE_ENV: testing
@@ -39,26 +31,26 @@ jobs:
           path: hubble
           lfs: true
 
-      - name: Clone latest normalizer code
-        uses: actions/checkout@v2
-        with:
-          repository: jina-ai/executor-normalizer
-          token: ${{ secrets.JINA_DEV_BOT }}
-          ref: refs/heads/master
-          path: normalizer
+      # - name: Clone latest normalizer code
+      #   uses: actions/checkout@v2
+      #   with:
+      #     repository: jina-ai/executor-normalizer
+      #     token: ${{ secrets.JINA_DEV_BOT }}
+      #     ref: refs/heads/master
+      #     path: normalizer
 
       - name: mk logs folder
         run: mkdir logs
 
-      - name: Replace docker-compose.yml normalizer image with build
-        working-directory: hubble
-        run: |
-          sed -i -e 's/image: jinahub\/hubble-normalizer:latest/build: normalizer/g' docker-compose.yml
+      # - name: Replace docker-compose.yml normalizer image with build
+      #   working-directory: hubble
+      #   run: |
+      #     sed -i -e 's/image: jinahub\/hubble-normalizer:latest/build: normalizer/g' docker-compose.yml
 
       - run: mv hubble/docker-compose.yml docker-compose.yml
 
       - name: Start containers
-        run: docker-compose -f "docker-compose.yml" up -d --build
+        run: docker-compose -f "docker-compose.yml" up -d
 
       # Change the owner of /tmp/jina-uploaded from root to runner
       - run: sudo chown -R $USER:$USER /tmp/jina-uploaded
