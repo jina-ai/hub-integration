@@ -39,29 +39,15 @@ jobs:
           path: hubble
           lfs: true
 
-      - name: Clone latest normalizer code
-        uses: actions/checkout@v2
-        with:
-          repository: jina-ai/executor-normalizer
-          token: ${{ secrets.JINA_DEV_BOT }}
-          ref: refs/heads/master
-          path: normalizer
-
       - name: mk logs folder
         run: mkdir logs
-
-      - name: Replace docker-compose.yml normalizer image with build
-        working-directory: hubble
-        run: |
-          sed -i -e 's/image: jinahub\/hubble-normalizer:latest/build: normalizer/g' docker-compose.yml
-
-      - run: mv hubble/docker-compose.yml docker-compose.yml
-
+      
       - name: Start containers
-        run: docker-compose -f "docker-compose.yml" up -d --build
-
-      # Change the owner of /tmp/jina-uploaded from root to runner
-      - run: sudo chown -R $USER:$USER /tmp/jina-uploaded
+        run: | 
+          mkdir -p /tmp/jina-uploaded /tmp/jina-hubble-temp
+          sudo chown -R $USER:$USER /tmp/jina-uploaded /tmp/jina-hubble-temp
+          docker-compose up -d
+        working-directory: hubble
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -74,20 +60,6 @@ jobs:
         working-directory: hubble
       - run: npm run start:prod > ../logs/server.log &
         working-directory: hubble
-
-      - run: |
-          status=1
-          for ((i=1;i<=30;i++));
-          do
-            curl --silent --fail http://localhost:3000
-            status=$?
-            if test $status = 0; then
-              break
-            fi
-            sleep 2
-          done
-          exit $status
-        shell: bash {0}
 
       - name: Use Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -106,17 +78,26 @@ jobs:
         working-directory: jina
         run: pip install -e '.[standard]'
 
-      - name: jina version
-        run: |
-          jina -vf
-          ls -al
-
       - name: Clone latest case1-9 code
         uses: actions/checkout@v2
         with:
           repository: jina-ai/executor-cases
           ref: refs/heads/main
           path: cases
+
+      - run: |
+          status=1
+          for ((i=1;i<=30;i++));
+          do
+            curl --silent --fail $JINA_HUBBLE_REGISTRY/ping
+            status=$?
+            if test $status = 0; then
+              break
+            fi
+            sleep 2
+          done
+          exit $status
+        shell: bash {0}
 
       - name: test case - ${{ matrix.case-path }}
         id: do_test
@@ -125,13 +106,45 @@ jobs:
         
       - name: extract id
         id: extract_id
-        run: cat logs/build.log | grep ID | awk '{printf "::set-output name=id::%s\n", $3}'
+        run: cat logs/build.log | grep -oE "executor/[0-9a-z]*" | sed 's/\// /' | awk '{printf "::set-output name=id::%s\n", $2}'
 
       - name: run executor
         run: jina executor --uses jinahub://${{ steps.extract_id.outputs.id }} > logs/executor.log &
 
-      - name: detect executor
-        run: cat logs/executor.log | grep 'ready and listening'
+      - if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,eventName,job,took
+          author_name: Hubble/Core Integration Test
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NIGHTLY_TESTS_WEBHOOK }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+
+      - if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,eventName,job,took
+          author_name: Hubble/Core Integration Test
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NIGHTLY_TESTS_WEBHOOK_CORE }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+
+      - if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,eventName,job,took
+          author_name: Hubble/Core Integration Test
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NIGHTLY_TESTS_WEBHOOK_HUBBLE }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+
+      - name: get docker compose logs
+        if: always()
+        run: docker-compose logs > ../logs/docker-compose.log
+        working-directory: hubble
 
       - name: Archive server log results
         if: always()
@@ -143,3 +156,4 @@ jobs:
       - name: Stop containers
         if: always()
         run: docker-compose -f "docker-compose.yml" down
+        working-directory: hubble
