@@ -48,6 +48,10 @@ jobs:
           sudo chown -R $USER:$USER /tmp/jina-uploaded /tmp/jina-hubble-temp
           docker-compose up -d
         working-directory: hubble
+        
+      - name: setup knative
+        uses: mapleeit/actions-setup-knative@main
+      - run: minikube tunnel --profile knative &> /dev/null &
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -85,7 +89,8 @@ jobs:
           ref: refs/heads/main
           path: cases
 
-      - run: |
+      - name: Check node server
+        run: |
           status=1
           for ((i=1;i<=30;i++));
           do
