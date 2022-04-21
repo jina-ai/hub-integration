@@ -24,7 +24,7 @@ jobs:
 
       - name: Install docker
         if: ${{ startsWith(matrix.os, 'macos-') }}
-        uses: docker-practice/actions-setup-docker@master
+        uses: docker-practice/actions-setup-docker@1.0.8
 
       - name: Clone latest jina code
         uses: actions/checkout@v2
