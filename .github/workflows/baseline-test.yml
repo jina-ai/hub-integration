@@ -143,28 +143,3 @@ jobs:
         if: always()
         run: docker-compose -f "docker-compose.yml" down
         working-directory: hubble
-
-  slack-if-failure:
-    runs-on: ubuntu-latest
-    needs:
-      - integrated-test
-    if: always()
-    steps:
-      - uses: technote-space/workflow-conclusion-action@v2
-      - if: env.WORKFLOW_CONCLUSION == 'failure'
-        uses: 8398a7/action-slack@v3
-        with:
-          status: failure
-          fields: repo,eventName
-          author_name: Hubble/Core Integration Test
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NIGHTLY_TESTS_WEBHOOK_CORE }}
-
-      - if: env.WORKFLOW_CONCLUSION == 'failure'
-        uses: 8398a7/action-slack@v3
-        with:
-          status: failure
-          fields: repo,eventName
-          author_name: Hubble/Core Integration Test
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NIGHTLY_TESTS_WEBHOOK_HUBBLE }}
