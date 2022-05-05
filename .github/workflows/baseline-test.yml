@@ -115,14 +115,20 @@ jobs:
         run: cat logs/build.log | grep -oE "executor/[0-9a-z]*" | sed 's/\// /' | awk '{printf "::set-output name=id::%s\n", $2}'
 
       - name: run executor
+        working-directory: .
         # run: jina executor --uses jinahub://${{ steps.extract_id.outputs.id }} & # > logs/executor.log
-        run: python run-executor.py jinahub://${{ steps.extract_id.outputs.id }}
+        run: |
+          pwd
+          ls -al
+          python run-executor.py jinahub://${{ steps.extract_id.outputs.id }}
 
       - name: run executor with docker
+        working-directory: .
         # run: jina executor --uses jinahub+docker://${{ steps.extract_id.outputs.id }} & # > logs/executor_docker.log
         run: python run-executor.py jinahub+docker://${{ steps.extract_id.outputs.id }}
 
       - name: run executor with sandbox
+        working-directory: .
         # run: jina executor --uses jinahub+sandbox://${{ steps.extract_id.outputs.id }} & # > logs/executor_sandbox.log
         run: python run-executor.py jinahub+sandbox://${{ steps.extract_id.outputs.id }}
 
