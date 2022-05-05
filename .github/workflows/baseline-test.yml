@@ -31,6 +31,7 @@ jobs:
       JINA_HUBBLE_REGISTRY: http://localhost:3000
 
     steps:
+      - uses: actions/checkout@v2
       - name: Clone latest hubble code
         uses: actions/checkout@v2
         with:
@@ -115,7 +116,7 @@ jobs:
         run: cat logs/build.log | grep -oE "executor/[0-9a-z]*" | sed 's/\// /' | awk '{printf "::set-output name=id::%s\n", $2}'
 
       - name: run executor
-        working-directory: .
+        # working-directory: .
         # run: jina executor --uses jinahub://${{ steps.extract_id.outputs.id }} & # > logs/executor.log
         run: |
           pwd
