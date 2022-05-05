@@ -115,13 +115,13 @@ jobs:
         run: cat logs/build.log | grep -oE "executor/[0-9a-z]*" | sed 's/\// /' | awk '{printf "::set-output name=id::%s\n", $2}'
 
       - name: run executor
-        run: jina executor --uses jinahub://${{ steps.extract_id.outputs.id }} > logs/executor.log
+        run: jina executor --uses jinahub://${{ steps.extract_id.outputs.id }} # > logs/executor.log
 
       - name: run executor with docker
-        run: jina executor --uses jinahub+docker://${{ steps.extract_id.outputs.id }} > logs/executor_docker.log
+        run: jina executor --uses jinahub+docker://${{ steps.extract_id.outputs.id }} # > logs/executor_docker.log
 
-      - name: run executor with docker
-        run: jina executor --uses jinahub+sandbox://${{ steps.extract_id.outputs.id }} > logs/executor_sandbox.log
+      - name: run executor with sandbox
+        run: jina executor --uses jinahub+sandbox://${{ steps.extract_id.outputs.id }} # > logs/executor_sandbox.log
 
       # - name: send slack message
       #   if: always()
