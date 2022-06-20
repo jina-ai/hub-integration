@@ -1,0 +1,22 @@
+name: Hub Integration
+author: hub
+description: Run Hub Integration
+branding:
+  color: blue
+  icon: code
+inputs:
+  github-token:
+    description: The GitHub token used to create an authenticated client
+    default: ${{ github.token }}
+    required: true
+  actions:  
+    description: run some actions
+    default: all
+    required: false
+outputs:
+  result: 
+    description: The return value, boolean;
+runs:
+  using: node16
+  main: dist/index.js
+    
