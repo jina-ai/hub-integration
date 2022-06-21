@@ -4,7 +4,7 @@
   "description": "Integration test for `jina hub ...`",
   "main": "index.js",
   "scripts": {
-    "build": "ncc build src/index.ts && rm -rf 'node_modules/'",
+    "build": "npm i && ncc build src/index.ts && rm -rf 'node_modules/'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

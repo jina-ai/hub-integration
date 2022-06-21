@@ -7,81 +7,54 @@ import {callAsyncFunction} from './async-function'
 import {wrapRequire} from './wrap-require'
 
 process.on('unhandledRejection', handleError)
-main().catch(handleError)
 
-type Options = {
-  log?: Console
-  userAgent?: string
-  previews?: string[]
-}
-
-async function main(): Promise<void> {
+async function main(): Promise<any> {
   const token = core.getInput('github-token', {required: true})
-  const debug = core.getInput('debug')
-  const userAgent = core.getInput('user-agent')
-  const previews = core.getInput('previews')
+  const actions = core.getInput('actions', {required: true});
+  const github = getOctokit(token)
 
-  const opts: Options = {}
-  if (debug === 'true') opts.log = console
-  if (userAgent != null) opts.userAgent = userAgent
-  if (previews != null) opts.previews = previews.split(',')
-
-  const github = getOctokit(token, opts)
-  let actions = core.getInput('actions');
-
-  if (actions == 'all') {
-    actions = `| 
-    const await github.rest.actions.createWorkflowDispatch({
+  let result;
+  if ( actions === 'baseline-test') {
+    result = await github.rest.actions.createWorkflowDispatch({
       owner: 'jina-ai',
       repo: 'hub-integration',
       workflow_id: 'baseline-test.yml',
       ref: 'main'
-    })
-
-    await github.rest.actions.createWorkflowDispatch({
+    });
+  } else if (actions === 'docker-source-combine') {
+    result = await github.rest.actions.createWorkflowDispatch({
       owner: 'jina-ai',
       repo: 'hub-integration',
       workflow_id: 'docker-source-combine.yml',
       ref: 'main'
-    })`
-  } else if ( actions === 'baseline-test') {
-    actions = `| 
-    const await github.rest.actions.createWorkflowDispatch({
+    });
+  } else {
+    const baselineResult = await github.rest.actions.createWorkflowDispatch({
       owner: 'jina-ai',
       repo: 'hub-integration',
       workflow_id: 'baseline-test.yml',
       ref: 'main'
-    })`
-  } else if ( actions === 'docker-source-combine') {
-    actions = `| 
-    await github.rest.actions.createWorkflowDispatch({
+    });
+    const combineResult = await github.rest.actions.createWorkflowDispatch({
       owner: 'jina-ai',
       repo: 'hub-integration',
       workflow_id: 'docker-source-combine.yml',
       ref: 'main'
-    })`
+    });
+    result = Object.assign({}, baselineResult, combineResult );
   }
-
-  // Using property/value shorthand on `require` (e.g. `{require}`) causes compilation errors.
-  const result = await callAsyncFunction(
-    {
-      require: wrapRequire,
-      __original_require__: __non_webpack_require__,
-      github,
-      context,
-      core,
-      exec,
-      glob,
-      io
-    },
-    actions
-  )
-  core.setOutput('result', !!result)
+  return result;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function handleError(err: any): void {
   console.error(err)
   core.setOutput('result', false)
   core.setFailed(`Unhandled error: ${err}`)
+}
+
+try {
+  const result = await main();
+  core.setOutput('result', result)
+} catch (err) {
+  handleError(err);
 }
