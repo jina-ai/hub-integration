@@ -1,0 +1,43 @@
+name: 'Hello World'
+description: 'Greet someone and record the time'
+inputs:
+  python-version: 
+    description: python-version
+    default: '3.7'
+    required: true
+outputs:
+  result:
+    description: 'result'
+    value: ${{ steps.finally.outputs.result }}
+runs:
+  using: composite
+  steps:
+      - uses: actions/checkout@v2
+      - name: Use Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Clone latest jina code
+        uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: refs/heads/master
+          path: jina
+      
+      - name: pip install jina
+        working-directory: jina
+        run: pip install -e '.[standard]'
+        shell: bash
+
+      - run: docker version
+        shell: bash
+
+      - run: python ${{ github.action_path }}/docker-source-combine.py
+        shell: bash
+
+      - name: finally
+        id: finally
+        run: echo "::set-output name=result::0"
+        shell: bash

@@ -8839,39 +8839,7 @@ async function main() {
     const token = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('github-token', { required: true });
     const actions = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('actions', { required: true });
     const github = (0,_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(token);
-    let result;
-    if (actions === 'baseline-test') {
-        result = await github.rest.actions.createWorkflowDispatch({
-            owner: 'jina-ai',
-            repo: 'hub-integration',
-            workflow_id: 'baseline-test.yml',
-            ref: 'main'
-        });
-    }
-    else if (actions === 'docker-source-combine') {
-        result = await github.rest.actions.createWorkflowDispatch({
-            owner: 'jina-ai',
-            repo: 'hub-integration',
-            workflow_id: 'docker-source-combine.yml',
-            ref: 'main'
-        });
-    }
-    else {
-        const baselineResult = await github.rest.actions.createWorkflowDispatch({
-            owner: 'jina-ai',
-            repo: 'hub-integration',
-            workflow_id: 'baseline-test.yml',
-            ref: 'main'
-        });
-        const combineResult = await github.rest.actions.createWorkflowDispatch({
-            owner: 'jina-ai',
-            repo: 'hub-integration',
-            workflow_id: 'docker-source-combine.yml',
-            ref: 'main'
-        });
-        result = Object.assign({}, baselineResult, combineResult);
-    }
-    return result;
+    return 0;
 }
 function handleError(err) {
     console.error(err);
