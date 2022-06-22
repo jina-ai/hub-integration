@@ -37,7 +37,7 @@ runs:
         node-version: '16.x'
         case-path: 'success/case1'
         node_env: 'testing'
-        jina_hubble_registry: 'jina_hubble_registry'
+        jina_hubble_registry: 'http://localhost:3000'
         github-token: ${{ inputs.github-token }}
     - name: get docker-source-combine result 
       if: ${{ inputs.actions === 'all' || inputs.actions === 'docker-source-combine'}}
