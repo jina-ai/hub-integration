@@ -15,11 +15,11 @@ inputs:
     default:  'success/case1'
   node_env:
     description: 'node_env'
-    required: true
+    required: false
     default:  'testing'
   jina_hubble_registry: 
     description: 'jina_hubble_registry'
-    required: true
+    required: false
     default:  'http://localhost:3000'
   github-token: 
     description: github-token
@@ -217,9 +217,6 @@ runs:
         shell: bash 
 
       - name: finally
-        env:
-            NODE_ENV: ${{ inputs.node_env }}
-            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         id: finally
         run: echo "::set-output name=result::0"
         shell: bash

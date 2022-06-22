@@ -2,15 +2,15 @@ name: Hub Integration
 author: hub
 description: Run Hub Integration
 inputs:
-  github-token:  # id of input
+  github-token:
     description: 'github-token'
     required: true
-  actions:  # id of input
+  actions:
     description: 'actions'
     required: true
     default:  ''
 outputs:
-  result: # id of output
+  result: 
     description: 'Random number'
     value: '0'
 runs:
