@@ -1,4 +1,4 @@
-name: 'Hello World'
+name: 'baseline-test'
 description: 'Greet someone and record the time'
 inputs:
   node-version:
@@ -17,6 +17,14 @@ inputs:
     description: 'node_env'
     required: false
     default:  'testing'
+  hubble_ref:
+    description: 'hubble_ref'
+    required: false
+    default:  'refs/heads/master'
+  jina_ref:
+    description: 'jina_ref'
+    required: false
+    default:  'refs/heads/master'
   jina_hubble_registry: 
     description: 'jina_hubble_registry'
     required: false
@@ -39,7 +47,7 @@ runs:
         with:
           repository: jina-ai/hubble
           token: ${{ secrets.JINA_DEV_BOT }}
-          ref: refs/heads/master
+          ref: ${{ inputs.hubble_ref }}
           path: hubble
           lfs: true
 
@@ -112,7 +120,7 @@ runs:
         with:
           repository: jina-ai/jina
           token: ${{ secrets.JINA_DEV_BOT }}
-          ref: refs/heads/master
+          ref: ${{ inputs.jina_ref }}
           path: jina
 
       - name: pip install jina

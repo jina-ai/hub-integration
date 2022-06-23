@@ -1,0 +1,51 @@
+name: 'sanity-check'
+description: 'Greet someone and record the time'
+inputs:
+  python-version:
+    description: 'python version'
+    required: false
+    default: '3.7'
+  jina_auth_token:
+    description: 'python version'
+    required: false
+    default:  ${{ secrets.JINA_AUTH_TOKEN}}
+outputs:
+  result:
+    description: 'result'
+    value: ${{ steps.finally.outputs.result }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v2
+      env:
+        JINA_AUTH_TOKEN: ${{ inputs.jina_auth_token }}
+    - name: Set up Python ${{ inputs.python-version }}
+      env:
+        JINA_AUTH_TOKEN: ${{ inputs.jina_auth_token }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Prepare environment
+      env:
+        JINA_AUTH_TOKEN: ${{ inputs.jina_auth_token }}
+      run: |
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          python -m pip install docarray[common]
+          python -m pip install jina
+      shell: bash
+    - name: Run checks
+      env:
+        JINA_AUTH_TOKEN: ${{ inputs.jina_auth_token }}
+      run: |
+          python ./sanity-checks/check-docarray.py
+          jina hub push --private --force-update SanityCheck --secret sanity@Check ./sanity-checks/executors/SanityCheck
+          python ./sanity-checks/check-executor-pull.py
+          python ./sanity-checks/check-artifact.py
+          python ./sanity-checks/check-user-api.py
+      shell: bash
+    - name: finally
+      id: finally
+      run: echo "::set-output name=result::0"
+      shell: bash
+  

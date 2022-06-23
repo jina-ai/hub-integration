@@ -1,0 +1,31 @@
+name: sanity-check
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      python-version:
+        description: 'actions'
+        required: false
+        default:  3.7
+        type: number
+    outputs:
+      baseline-test-result:
+        description: "The first output string"
+        value: ${{ jobs.sanity-check.outputs.result }}
+jobs:
+  sanity-check:
+    needs: build
+    runs-on: ubuntu-latest
+
+    env:
+      JINA_AUTH_TOKEN: ${{ secrets.JINA_AUTH_TOKEN}}
+    outputs:
+      result: ${{ steps.sanity-check.outputs.result }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: sanity-check
+        id: sanity-check
+        uses: jina-ai/hub-integration/.github/actions/sanity-check@master
+        with:
+          python-version: '3.7'

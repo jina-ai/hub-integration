@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   workflow_call:
     inputs:
-      actions:  # id of input
+      actions:
         description: 'actions'
         required: false
         default:  'all'
@@ -19,6 +19,7 @@ on:
         description: "The second output string"
         value: ${{ jobs.docker-source-combine.outputs.result }}
 jobs:
+
   baseline-test:
     runs-on: ubuntu-latest
     strategy:
@@ -43,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: baseline-test
-        uses: floralatin/hub-actions/.github/actions/baseline-test@master
+        uses: jina-ai/hub-integration/.github/actions/baseline-test@master
         id: baseline-test
         with: 
           python-version: ${{ matrix.python-version }}
@@ -60,7 +61,7 @@ jobs:
     steps:
     - name: docker-source-combine
       id: docker-source-combine
-      uses: floralatin/hub-actions/.github/actions/docker-source-combine@master
+      uses: jina-ai/hub-integration/.github/actions/docker-source-combine@master
       with:
         python-version: '3.7'
         github-token: ${{ secrets.access_token }}

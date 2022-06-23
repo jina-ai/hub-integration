@@ -1,10 +1,14 @@
-name: 'Hello World'
+name: 'docker-source-combine'
 description: 'Greet someone and record the time'
 inputs:
   python-version: 
     description: python-version
     default: '3.7'
     required: true
+  jina_ref: 
+    description: jina_ref
+    default: 'refs/heads/master'
+    required: false
   github-token: 
     description: github-token
     required: false
@@ -26,7 +30,7 @@ runs:
         with:
           repository: jina-ai/jina
           token: ${{ secrets.GITHUB_TOKEN }}
-          ref: refs/heads/master
+          ref: ${{ inputs.jina_ref }}
           path: jina
       
       - name: pip install jina
