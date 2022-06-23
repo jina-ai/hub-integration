@@ -4,20 +4,19 @@ on:
   workflow_dispatch:
   workflow_call:
     inputs:
-      python-version:
+      python_version:
         description: 'actions'
         required: false
         default:  3.7
         type: number
     outputs:
-      baseline-test-result:
-        description: "The first output string"
+      sanity_check_result:
+        description: "sanity check"
         value: ${{ jobs.sanity-check.outputs.result }}
 jobs:
   sanity-check:
     needs: build
     runs-on: ubuntu-latest
-
     env:
       JINA_AUTH_TOKEN: ${{ secrets.JINA_AUTH_TOKEN}}
     outputs:

@@ -1,16 +1,13 @@
 name: 'docker-source-combine'
 description: 'Greet someone and record the time'
 inputs:
-  python-version: 
-    description: python-version
+  python_version: 
+    description: python_version
     default: '3.7'
     required: true
   jina_ref: 
     description: jina_ref
     default: 'refs/heads/master'
-    required: false
-  github-token: 
-    description: github-token
     required: false
 outputs:
   result:
@@ -20,10 +17,10 @@ runs:
   using: composite
   steps:
       - uses: actions/checkout@v2
-      - name: Use Python ${{ inputs.python-version }}
+      - name: Use Python ${{ inputs.python_version }}
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ inputs.python-version }}
+          python_version: ${{ inputs.python_version }}
 
       - name: Clone latest jina code
         uses: actions/checkout@v2

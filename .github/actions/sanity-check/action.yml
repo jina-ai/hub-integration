@@ -1,12 +1,12 @@
 name: 'sanity-check'
-description: 'Greet someone and record the time'
+description: 'include docarray executor artifact user-api sanity check'
 inputs:
-  python-version:
+  python_version:
     description: 'python version'
     required: false
     default: '3.7'
   jina_auth_token:
-    description: 'python version'
+    description: 'jina auth token need login'
     required: false
     default:  ${{ secrets.JINA_AUTH_TOKEN}}
 outputs:
@@ -19,12 +19,12 @@ runs:
     - uses: actions/checkout@v2
       env:
         JINA_AUTH_TOKEN: ${{ inputs.jina_auth_token }}
-    - name: Set up Python ${{ inputs.python-version }}
+    - name: Set up Python ${{ inputs.python_version }}
       env:
         JINA_AUTH_TOKEN: ${{ inputs.jina_auth_token }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ inputs.python-version }}
+        python_version: ${{ inputs.python_version }}
     - name: Prepare environment
       env:
         JINA_AUTH_TOKEN: ${{ inputs.jina_auth_token }}

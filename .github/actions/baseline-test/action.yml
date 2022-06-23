@@ -1,16 +1,16 @@
-name: 'baseline-test'
-description: 'Greet someone and record the time'
+name: 'baseline_test'
+description: 'use jina-ai/executor-cases test jina and jina hub'
 inputs:
-  node-version:
-    description: 'node-version'
+  node_version:
+    description: 'node_version'
     required: true
     default: '16.x'
-  python-version: 
-    description: python-version
+  python_version: 
+    description: python_version
     default: '3.7'
     required: true
-  case-path: 
-    description: 'case-path'
+  case_path: 
+    description: 'case_path'
     required: true
     default:  'success/case1'
   node_env:
@@ -29,9 +29,6 @@ inputs:
     description: 'jina_hubble_registry'
     required: false
     default:  'http://localhost:3000'
-  github-token: 
-    description: github-token
-    required: false
 outputs:
   result:
     description: 'result'
@@ -77,13 +74,13 @@ runs:
             JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         shell: bash
 
-      - name: Use Node.js ${{ inputs.node-version }}
+      - name: Use Node.js ${{ inputs.node_version }}
         uses: actions/setup-node@v2
         env:
             NODE_ENV: ${{ inputs.node_env }}
             JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         with:
-          node-version: ${{ inputs.node-version }}
+          node_version: ${{ inputs.node_version }}
 
       - run: yarn install --frozen-lockfile
         working-directory: hubble
@@ -104,13 +101,13 @@ runs:
             JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         shell: bash
 
-      - name: Use Python ${{ inputs.python-version }}
+      - name: Use Python ${{ inputs.python_version }}
         uses: actions/setup-python@v2
         env:
             NODE_ENV: ${{ inputs.node_env }}
             JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         with:
-          python-version: ${{ inputs.python-version }}
+          python_version: ${{ inputs.python_version }}
 
       - name: Clone latest jina code
         uses: actions/checkout@v2
@@ -159,12 +156,12 @@ runs:
           exit $status
         shell: bash {0}
 
-      - name: test case - ${{ inputs.case-path }}
+      - name: test case - ${{ inputs.case_path }}
         env:
             NODE_ENV: ${{ inputs.node_env }}
             JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         id: do_test
-        run: jina hub push ${{ inputs.case-path }} | tee ../logs/build.log
+        run: jina hub push ${{ inputs.case_path }} | tee ../logs/build.log
         working-directory: cases
         shell: bash
         
@@ -194,7 +191,7 @@ runs:
           NODE_ENV: ${{ inputs.node_env }}
           JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NIGHTLY_TESTS_WEBHOOK }}
-          MATRIX_CONTEXT: ${{ inputs.node-version }}  ${{ inputs.python-version }} ${{ inputs.case-path }}
+          MATRIX_CONTEXT: ${{ inputs.node_version }}  ${{ inputs.python_version }} ${{ inputs.case_path }}
 
       - name: get docker compose logs
         if: always()

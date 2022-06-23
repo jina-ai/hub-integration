@@ -1,0 +1,85 @@
+name: hub integration
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      actions:
+        description: 'actions'
+        required: false
+        default:  'all'
+        type: string
+    secrets:
+        access_token:
+          required: true
+    outputs:
+      sanity_check:
+        description: "sanity check"
+        value: ${{ jobs.sanity_check.outputs.result }}
+      baseline_test_result:
+        description: "baseline test result"
+        value: ${{ jobs.baseline-test.outputs.result }}
+      docker_source_combine_result:
+        description: " docker source combine result"
+        value: ${{ jobs.docker_source_combine.outputs.result }}
+jobs:
+
+  sanity_check:
+    runs-on: ubuntu-latest
+    env:
+      JINA_AUTH_TOKEN: ${{ secrets.JINA_AUTH_TOKEN}}
+    outputs:
+      result: ${{ steps.sanity_check.outputs.result }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: sanity_check
+        id: sanity_heck
+        uses: jina-ai/hub-integration/.github/actions/sanity-check@master
+        with:
+          python-version: '3.7'
+
+  baseline_test:
+    needs: sanity_check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node_version: [16.x]
+        python_version: ['3.7', '3.8', '3.9']
+        case_path:
+          - success/case1
+          - success/case2
+          - success/case3
+          # - success/case4
+          - success/case5
+          - success/case6
+          - success/case7
+          - success/case8
+          - success/case9
+    env:
+      NODE_ENV: testing
+      JINA_HUBBLE_REGISTRY: http://localhost:3000
+    outputs:
+      result: ${{ steps.baseline-test.outputs.result }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: baseline-test
+        uses: jina-ai/hub-integration/.github/actions/baseline-test@master
+        id: baseline-test
+        with: 
+          python_version: ${{ matrix.python_version }}
+          node_version: ${{ matrix.node_version }}
+          case_path: ${{ matrix.case_path }}
+          node_env: 'testing'
+          jina_hubble_registry: 'http://localhost:3000'
+
+  docker_source_combine:
+    needs: sanity_check
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.docker_source_combine.outputs.result }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: docker_source_combine
+      id: docker_source_combine
+      uses: jina-ai/hub-integration/.github/actions/docker-source-combine@master
+      with:
+        python_version: '3.7'
