@@ -1,0 +1,68 @@
+name: Integrated test
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      actions:  # id of input
+        description: 'actions'
+        required: false
+        default:  'all'
+        type: string
+    secrets:
+        access_token:
+          required: true
+    outputs:
+      baseline-test-result:
+        description: "The first output string"
+        value: ${{ jobs.baseline-test.outputs.result }}
+      docker-source-combine-result:
+        description: "The second output string"
+        value: ${{ jobs.docker-source-combine.outputs.result }}
+jobs:
+  baseline-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+        python-version: ['3.7', '3.8', '3.9']
+        case-path:
+          - success/case1
+          - success/case2
+          - success/case3
+          # - success/case4
+          - success/case5
+          - success/case6
+          - success/case7
+          - success/case8
+          - success/case9
+    env:
+      NODE_ENV: testing
+      JINA_HUBBLE_REGISTRY: http://localhost:3000
+    outputs:
+      result: ${{ steps.baseline-test.outputs.result }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: baseline-test
+        uses: floralatin/hub-actions/.github/actions/baseline-test@master
+        id: baseline-test
+        with: 
+          python-version: ${{ matrix.python-version }}
+          node-version: ${{ matrix.node-version }}
+          case-path: ${{ matrix.case-path }}
+          node_env: 'testing'
+          jina_hubble_registry: 'http://localhost:3000'
+          github-token: ${{ secrets.access_token }}
+
+  docker-source-combine:
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.docker-source-combine.outputs.result }}
+    steps:
+    - name: docker-source-combine
+      id: docker-source-combine
+      uses: floralatin/hub-actions/.github/actions/docker-source-combine@master
+      with:
+        python-version: '3.7'
+        github-token: ${{ secrets.access_token }}
+        
+        
