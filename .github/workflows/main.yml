@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: sanity_check
         id: sanity_heck
-        uses: floralatin/hub-actions/actions/sanity-check@master
+        uses: jina-ai/hub-integration/actions/sanity-check@master
         with:
           python-version: '3.7'
           jina_auth_token: ${{ secrets.jina_auth_token }}
@@ -65,7 +65,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: baseline-test
-        uses: floralatin/hub-actions/actions/baseline-test@master
+        uses: jina-ai/hub-integration/actions/baseline-test@master
         id: baseline-test
         with: 
           python_version: ${{ matrix.python_version }}
@@ -85,7 +85,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: docker_source_combine
       id: docker_source_combine
-      uses: floralatin/hub-actions/actions/docker-source-combine@master
+      uses: jina-ai/hub-integration/actions/docker-source-combine@master
       with:
         python_version: '3.7'
         jin_dev_bot: ${{ secrets.jin_dev_bot }}
