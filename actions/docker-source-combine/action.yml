@@ -1,14 +1,17 @@
 name: 'docker-source-combine'
-description: 'Greet someone and record the time'
+description: 'docker source combine'
 inputs:
   python_version: 
     description: python_version
     default: '3.7'
     required: true
   jina_ref: 
-    description: jina_ref
+    description: 'use branch ref'
     default: 'refs/heads/master'
     required: false
+  jin_dev_bot: 
+    description: 'use token pull jina-ai/jina'
+    required: true
 outputs:
   result:
     description: 'result'
@@ -16,7 +19,7 @@ outputs:
 runs:
   using: composite
   steps:
-      - uses: actions/checkout@v2
+      - uses:  actions/checkout@v2
       - name: Use Python ${{ inputs.python_version }}
         uses: actions/setup-python@v2
         with:
@@ -26,7 +29,7 @@ runs:
         uses: actions/checkout@v2
         with:
           repository: jina-ai/jina
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ inputs.jin_dev_bot }}
           ref: ${{ inputs.jina_ref }}
           path: jina
       
@@ -38,7 +41,7 @@ runs:
       - run: docker version
         shell: bash
 
-      - run: python ${{ github.action_path }}/docker-source-combine.py
+      - run: python ${{ github.action_path }}/executor.py
         shell: bash
 
       - name: finally

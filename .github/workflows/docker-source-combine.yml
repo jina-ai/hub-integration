@@ -5,7 +5,6 @@ on:
     # Every day 11:40 Shanghai time
     - cron:  '41 3 * * *'
   workflow_dispatch:
-  workflow_call:
 
 jobs:
   usage-test:

@@ -13,6 +13,12 @@ inputs:
     description: 'case_path'
     required: true
     default:  'success/case1'
+  jin_dev_bot: 
+    description: 'jin_dev_bot'
+    required: true
+  slack_nightly_tests_webhook:
+    description: 'send message to slack'
+    required: true
   node_env:
     description: 'node_env'
     required: false
@@ -37,13 +43,13 @@ runs:
   using: composite
   steps:
       - name: Clone latest hubble code
-        uses: actions/checkout@v2
+        uses:  actions/checkout@v3
         env:
             NODE_ENV: ${{ inputs.node_env }}
             JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         with:
           repository: jina-ai/hubble
-          token: ${{ secrets.JINA_DEV_BOT }}
+          token: ${{ inputs.jin_dev_bot }}
           ref: ${{ inputs.hubble_ref }}
           path: hubble
           lfs: true
@@ -116,7 +122,7 @@ runs:
             JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         with:
           repository: jina-ai/jina
-          token: ${{ secrets.JINA_DEV_BOT }}
+          token: ${{ inputs.jin_dev_bot }}
           ref: ${{ inputs.jina_ref }}
           path: jina
 
@@ -190,8 +196,8 @@ runs:
         env:
           NODE_ENV: ${{ inputs.node_env }}
           JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NIGHTLY_TESTS_WEBHOOK }}
-          MATRIX_CONTEXT: ${{ inputs.node_version }}  ${{ inputs.python_version }} ${{ inputs.case_path }}
+          SLACK_WEBHOOK_URL: ${{ inputs.slack_nightly_tests_webhook }}
+          MATRIX_CONTEXT:  '{"node_version": ${{ inputs.node_version }} , "python_version": ${{ inputs.python_version }}, "case_path":  ${{ inputs.case_path }} }' 
 
       - name: get docker compose logs
         if: always()

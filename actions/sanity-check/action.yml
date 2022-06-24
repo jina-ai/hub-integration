@@ -8,7 +8,6 @@ inputs:
   jina_auth_token:
     description: 'jina auth token need login'
     required: false
-    default:  ${{ secrets.JINA_AUTH_TOKEN}}
 outputs:
   result:
     description: 'result'
@@ -37,12 +36,13 @@ runs:
     - name: Run checks
       env:
         JINA_AUTH_TOKEN: ${{ inputs.jina_auth_token }}
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
       run: |
-          python ./sanity-checks/check-docarray.py
-          jina hub push --private --force-update SanityCheck --secret sanity@Check ./sanity-checks/executors/SanityCheck
-          python ./sanity-checks/check-executor-pull.py
-          python ./sanity-checks/check-artifact.py
-          python ./sanity-checks/check-user-api.py
+          python ${{ github.action_path }}/dist/check-docarray.py
+          jina hub push --private --force-update SanityCheck --secret sanity@Check ${{ github.action_path }}/dist/executors/SanityCheck
+          python ${{ github.action_path }}/dist/check-executor-pull.py
+          python ${{ github.action_path }}/dist/check-artifact.py
+          python ${{ github.action_path }}/dist/check-user-api.py
       shell: bash
     - name: finally
       id: finally
