@@ -1,0 +1,91 @@
+name: hub integration
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      actions:
+        description: 'can selected different tests. options [ all, sanity_check, baseline_test, docker_source_combine]'
+        required: false
+        default:  'all'
+        type: string
+    secrets: 
+        jin_dev_bot:
+          description: "your pat and use it to pull hubble repo and jina repo"
+          required: true
+        jina_auth_token:
+          description: "your jina auth token and use it to run sanity_check"
+          required: true
+    outputs:
+      sanity_check_result:
+        description: "the step sanity check return-value"
+        value: ${{ jobs.sanity_check.outputs.result }}
+      baseline_test_result:
+        description: "the step baseline test return-value"
+        value: ${{ jobs.baseline_test.outputs.result }}
+      docker_source_combine_result:
+        description: "the step docker source combine return-value"
+        value: ${{ jobs.docker_source_combine.outputs.result }}
+jobs:
+
+  sanity_check:
+    if: ${{ inputs.actions == 'all' ||  contains(inputs.actions, 'sanity_check') }}
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.sanity_check.outputs.result }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: sanity_check
+        id: sanity_heck
+        uses: jina-ai/hub-integration/actions/sanity-check@master
+        with:
+          python-version: '3.7'
+          jina_auth_token: ${{ secrets.jina_auth_token }}
+
+  baseline_test:
+    if: ${{ inputs.actions == 'all' ||  contains(inputs.actions, 'baseline_test') }}
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.baseline_test.outputs.result }}
+    strategy:
+      matrix:
+        node_version: [16.x]
+        python_version: ['3.7']
+        case_path:
+          - success/case1
+          - success/case2
+          - success/case3
+          # - success/case4
+          - success/case5
+          - success/case6
+          - success/case7
+          - success/case8
+          - success/case9
+    env:
+      NODE_ENV: testing
+      JINA_HUBBLE_REGISTRY: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v2
+      - name: baseline_test
+        uses: jina-ai/hub-integration/actions/baseline-test@master
+        id: baseline_test
+        with: 
+          python_version: ${{ matrix.python_version }}
+          node_version: ${{ matrix.node_version }}
+          case_path: ${{ matrix.case_path }}
+          node_env: 'testing'
+          jina_hubble_registry: 'http://localhost:3000'
+          jin_dev_bot: ${{ secrets.jin_dev_bot }}
+
+  docker_source_combine:
+    if: ${{ inputs.actions == 'all' ||  contains(inputs.actions, 'docker_source_combine') }}
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.docker_source_combine.outputs.result }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: docker_source_combine
+      id: docker_source_combine
+      uses: jina-ai/hub-integration/actions/docker-source-combine@master
+      with:
+        python_version: '3.7'
+        jin_dev_bot: ${{ secrets.jin_dev_bot }}

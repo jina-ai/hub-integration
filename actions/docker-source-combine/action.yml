@@ -1,0 +1,54 @@
+name: 'docker-source-combine'
+description: 'docker source combine'
+inputs:
+  python_version: 
+    description: 'python version'
+    default: '3.7'
+    required: true
+  jina_ref: 
+    description: 'branch ref'
+    default: 'refs/heads/master'
+    required: false
+  jin_dev_bot: 
+    description: 'use token pull jina-ai/jina'
+    required: true
+  action_jina_path: 
+    description: 'default jina path avoid conflict with the original repo'
+    required: false
+    default:  'actions__jina'
+outputs:
+  result:
+    description: 'result'
+    value: ${{ steps.finally.outputs.result }}
+runs:
+  using: composite
+  steps:
+      - uses:  actions/checkout@v2
+      - name: Use Python ${{ inputs.python_version }}
+        uses: actions/setup-python@v2
+        with:
+          python_version: ${{ inputs.python_version }}
+
+      - name: Clone latest jina code
+        uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina
+          token: ${{ inputs.jin_dev_bot }}
+          ref: ${{ inputs.jina_ref }}
+          path: ${{ inputs.action_jina_path }}
+      
+      - name: pip install jina
+        working-directory: ${{ inputs.action_jina_path }}
+        run: pip install -e '.[standard]'
+        shell: bash
+
+      - run: docker version
+        shell: bash
+
+      - run: python ${{ github.action_path }}/src/executor.py
+        shell: bash
+
+      - name: finally
+        id: finally
+        run: echo "::set-output name=result::0"
+        shell: bash

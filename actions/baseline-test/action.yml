@@ -1,0 +1,230 @@
+name: 'baseline_test'
+description: 'use jina-ai/executor-cases test jina and jina hub'
+inputs:
+  node_version:
+    description: 'node_version'
+    required: true
+    default: '16.x'
+  python_version: 
+    description: python_version
+    default: '3.7'
+    required: true
+  case_path: 
+    description: 'case_path'
+    required: true
+    default:  'success/case1'
+  jin_dev_bot: 
+    description: 'jin_dev_bot'
+    required: true
+  node_env:
+    description: 'node_env'
+    required: false
+    default:  'testing'
+  hubble_ref:
+    description: 'hubble_ref'
+    required: false
+    default:  'refs/heads/master'
+  jina_ref:
+    description: 'jina_ref'
+    required: false
+    default:  'refs/heads/master'
+  jina_hubble_registry: 
+    description: 'jina_hubble_registry'
+    required: false
+    default:  'http://localhost:3000'
+  action_hubble_path: 
+    description: 'default hubble path avoid conflict with the original repo'
+    required: false
+    default:  'actions__hubble'
+  action_jina_path: 
+    description: 'default jina path avoid conflict with the original repo'
+    required: false
+    default:  'actions__jina'
+  action_cases_path:
+    description: 'default cases path avoid conflict with the original repo'
+    required: false
+    default:  'actions__cases'
+outputs:
+  result:
+    description: 'result'
+    value: ${{ steps.finally.outputs.result }}
+runs:
+  using: composite
+  steps:
+      - name: Clone latest hubble code
+        uses:  actions/checkout@v3
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        with:
+          repository: jina-ai/hubble
+          token: ${{ inputs.jin_dev_bot }}
+          ref: ${{ inputs.hubble_ref }}
+          path: ${{ inputs.action_hubble_path }}
+          lfs: true
+
+      - name: mk logs folder
+        run: mkdir logs
+        shell: bash
+      
+      - name: Start containers
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        run: | 
+          mkdir -p /tmp/jina-uploaded /tmp/jina-hubble-temp
+          sudo chown -R $USER:$USER /tmp/jina-uploaded /tmp/jina-hubble-temp
+          docker-compose up -d
+        shell: bash
+        working-directory: ${{ inputs.action_hubble_path }}
+        
+      - name: setup knative
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        uses: mapleeit/actions-setup-knative@main
+      - run: minikube tunnel --profile knative &> /dev/null &
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        shell: bash
+
+      - name: Use Node.js ${{ inputs.node_version }}
+        uses: actions/setup-node@v2
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        with:
+          node_version: ${{ inputs.node_version }}
+
+      - run: yarn install --frozen-lockfile
+        working-directory: ${{ inputs.action_hubble_path }}
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        shell: bash
+      - run: npm run build --if-present
+        working-directory: ${{ inputs.action_hubble_path }}
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        shell: bash
+      - run: npm run start:prod > ../logs/server.log &
+        working-directory: ${{ inputs.action_hubble_path }}
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        shell: bash
+
+      - name: Use Python ${{ inputs.python_version }}
+        uses: actions/setup-python@v2
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        with:
+          python_version: ${{ inputs.python_version }}
+
+      - name: Clone latest jina code
+        uses: actions/checkout@v2
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        with:
+          repository: jina-ai/jina
+          token: ${{ inputs.jin_dev_bot }}
+          ref: ${{ inputs.jina_ref }}
+          path: ${{ inputs.action_jina_path }}
+
+      - name: pip install jina
+        working-directory: ${{ inputs.action_jina_path }}
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        run: pip install -e '.[standard]'
+        shell: bash
+
+      - name: Clone latest case1-9 code
+        uses: actions/checkout@v2
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        with:
+          repository: jina-ai/executor-cases
+          token: ${{ inputs.jin_dev_bot }}
+          ref: refs/heads/main
+          path: ${{ inputs.action_cases_path }}
+
+      - name: Check node server
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        run: |
+          status=1
+          for ((i=1;i<=30;i++));
+          do
+            curl --silent --fail $JINA_HUBBLE_REGISTRY/ping
+            status=$?
+            if test $status = 0; then
+              break
+            fi
+            sleep 2
+          done
+          exit $status
+        shell: bash {0}
+
+      - name: test case - ${{ inputs.case_path }}
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        id: do_test
+        run: jina hub push ${{ inputs.case_path }} | tee ../logs/build.log
+        working-directory: ${{ inputs.action_cases_path }}
+        shell: bash
+        
+      - name: extract id
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        id: extract_id
+        run: cat logs/build.log | grep -oE "executor/[0-9a-z]*" | sed 's/\// /' | awk '{printf "::set-output name=id::%s\n", $2}'
+        shell: bash
+
+      - name: run executor
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        run: jina executor --uses jinahub://${{ steps.extract_id.outputs.id }} > logs/executor.log &
+        shell: bash
+
+      - name: get docker compose logs
+        if: always()
+        run: docker-compose logs > ../logs/docker-compose.log
+        working-directory: ${{ inputs.action_hubble_path }}
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        shell: bash
+
+      - name: Archive server log results
+        if:  failure()
+        uses: actions/upload-artifact@v2
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        with:
+          name: logs
+          path: logs
+
+      - name: Stop containers
+        if: always()
+        run: docker-compose -f "docker-compose.yml" down
+        env:
+            NODE_ENV: ${{ inputs.node_env }}
+            JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        working-directory: ${{ inputs.action_hubble_path }}
+        shell: bash 
+
+      - name: finally
+        id: finally
+        run: echo "::set-output name=result::0"
+        shell: bash
