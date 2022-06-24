@@ -6,7 +6,7 @@ inputs:
     required: false
     default: '3.7'
   jina_auth_token:
-    description: 'jina auth token need login'
+    description: 'jina auth token, use it test user api'
     required: false
 outputs:
   result:

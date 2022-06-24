@@ -2,36 +2,36 @@ name: 'baseline_test'
 description: 'use jina-ai/executor-cases test jina and jina hub'
 inputs:
   node_version:
-    description: 'node_version'
+    description: 'node version'
     required: true
     default: '16.x'
   python_version: 
-    description: python_version
+    description: 'python version'
     default: '3.7'
     required: true
   case_path: 
-    description: 'case_path'
+    description: 'case path, like success/case1'
     required: true
-    default:  'success/case1'
+    default: 'success/case1'
   jin_dev_bot: 
-    description: 'jin_dev_bot'
+    description: 'jin_dev_bot use it to pull hubble repo'
     required: true
   node_env:
-    description: 'node_env'
+    description: 'node env'
     required: false
-    default:  'testing'
+    default: 'testing'
   hubble_ref:
-    description: 'hubble_ref'
+    description: 'hubble ref'
     required: false
-    default:  'refs/heads/master'
+    default: 'refs/heads/master'
   jina_ref:
-    description: 'jina_ref'
+    description: 'jina ref'
     required: false
-    default:  'refs/heads/master'
+    default: 'refs/heads/master'
   jina_hubble_registry: 
-    description: 'jina_hubble_registry'
+    description: 'docker jina hubble registry port'
     required: false
-    default:  'http://localhost:3000'
+    default: 'http://localhost:3000'
 outputs:
   result:
     description: 'result'

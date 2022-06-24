@@ -2,11 +2,11 @@ name: 'docker-source-combine'
 description: 'docker source combine'
 inputs:
   python_version: 
-    description: python_version
+    description: 'python version'
     default: '3.7'
     required: true
   jina_ref: 
-    description: 'use branch ref'
+    description: 'branch ref'
     default: 'refs/heads/master'
     required: false
   jin_dev_bot: 

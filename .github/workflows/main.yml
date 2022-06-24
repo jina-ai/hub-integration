@@ -9,19 +9,21 @@ on:
         default:  'all'
         type: string
     secrets: 
-        jin_dev_bot: 
+        jin_dev_bot:
+          description: "your pat and use it to pull hubble repo and jina repo"
           required: true
         jina_auth_token:
+          description: "your jina auth token and use it to run sanity_check"
           required: true
     outputs:
-      sanity_check:
-        description: "sanity check"
+      sanity_check_result:
+        description: "the step sanity check return-value"
         value: ${{ jobs.sanity_check.outputs.result }}
       baseline_test_result:
-        description: "baseline test result"
+        description: "the step baseline test return-value"
         value: ${{ jobs.baseline-test.outputs.result }}
       docker_source_combine_result:
-        description: " docker source combine result"
+        description: "the step docker source combine return-value"
         value: ${{ jobs.docker_source_combine.outputs.result }}
 jobs:
 
