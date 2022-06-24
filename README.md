@@ -33,18 +33,18 @@
 - In your workflow jobs
 
 ```
-	on: [push]
+on: [push]
 
-	jobs:
-  		hub-actions:
-    	uses: jina-ai/hub-integratio/.github/workflows/main.yml@master
-    	with:
-      		actions: 'baseline_test' 
-      		### options includes [all, baseline_test, sanity_check, docker_source_combine]
-    		secrets: 
-      			jin_dev_bot: ${{ secrets.JINA_DEV_BOT }}
-      			### "your pat and use it to pull hubble repo and jina repo"
-    			jina_auth_token: ${{ secrets.JINA_AUTH_TOKEN }}
-    			### "your jina auth token and use it to run sanity_check"
+jobs:
+	hub-actions:
+	uses: jina-ai/hub-integratio/.github/workflows/main.yml@master
+	with:
+		actions: 'baseline_test'
+		### options includes [all, baseline_test, sanity_check, docker_source_combine]
+	secrets: 
+    	jin_dev_bot: ${{ secrets.JINA_DEV_BOT }}
+    	### "your pat and use it to pull hubble repo and jina rep
+    	jina_auth_token: ${{ secrets.JINA_AUTH_TOKEN }}
+    	### "your jina auth token and use it to run sanity_check"
 ```
 
