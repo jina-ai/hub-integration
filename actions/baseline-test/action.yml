@@ -16,9 +16,6 @@ inputs:
   jin_dev_bot: 
     description: 'jin_dev_bot'
     required: true
-  slack_nightly_tests_webhook:
-    description: 'send message to slack'
-    required: true
   node_env:
     description: 'node_env'
     required: false
@@ -185,19 +182,6 @@ runs:
             JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         run: jina executor --uses jinahub://${{ steps.extract_id.outputs.id }} > logs/executor.log &
         shell: bash
-
-      - name: send slack message
-        if: always()
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          fields: repo,eventName,job,took
-          author_name: Hubble/Core Integration Test
-        env:
-          NODE_ENV: ${{ inputs.node_env }}
-          JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
-          SLACK_WEBHOOK_URL: ${{ inputs.slack_nightly_tests_webhook }}
-          MATRIX_CONTEXT:  '{"node_version": ${{ inputs.node_version }} , "python_version": ${{ inputs.python_version }}, "case_path":  ${{ inputs.case_path }} }' 
 
       - name: get docker compose logs
         if: always()

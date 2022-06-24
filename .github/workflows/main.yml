@@ -13,8 +13,6 @@ on:
           required: true
         jina_auth_token:
           required: true
-        slack_nightly_tests_webhook:
-          required: false
     outputs:
       sanity_check:
         description: "sanity check"
@@ -74,7 +72,6 @@ jobs:
           node_env: 'testing'
           jina_hubble_registry: 'http://localhost:3000'
           jin_dev_bot: ${{ secrets.jin_dev_bot }}
-          slack_nightly_tests_webhook: ${{ secrets.slack_nightly_tests_webhook}}
 
   docker_source_combine:
     needs: sanity_check
