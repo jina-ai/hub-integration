@@ -24,7 +24,7 @@ def upload(id: str = None):
         payload['id'] = id
 
     files=[
-        ('file',('manifest.yml',open(f'{_GITHUB_ACTION_PATH}/dist/executors/SanityCheck/manifest.yml','rb'),'application/octet-stream'))
+        ('file',('manifest.yml',open(f'{_GITHUB_ACTION_PATH}/src/executors/SanityCheck/manifest.yml','rb'),'application/octet-stream'))
     ]
 
     url = f'{_API_HOST}/v2/rpc/artifact.upload'

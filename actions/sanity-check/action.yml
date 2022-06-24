@@ -38,11 +38,11 @@ runs:
         JINA_AUTH_TOKEN: ${{ inputs.jina_auth_token }}
         GITHUB_ACTION_PATH: ${{ github.action_path }}
       run: |
-          python ${{ github.action_path }}/dist/check-docarray.py
-          jina hub push --private --force-update SanityCheck --secret sanity@Check ${{ github.action_path }}/dist/executors/SanityCheck
-          python ${{ github.action_path }}/dist/check-executor-pull.py
-          python ${{ github.action_path }}/dist/check-artifact.py
-          python ${{ github.action_path }}/dist/check-user-api.py
+          python ${{ github.action_path }}/src/check-docarray.py
+          jina hub push --private --force-update SanityCheck --secret sanity@Check ${{ github.action_path }}/src/executors/SanityCheck
+          python ${{ github.action_path }}/src/check-executor-pull.py
+          python ${{ github.action_path }}/src/check-artifact.py
+          python ${{ github.action_path }}/src/check-user-api.py
       shell: bash
     - name: finally
       id: finally

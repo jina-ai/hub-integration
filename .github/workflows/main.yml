@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       actions:
-        description: 'can selected different tests '
+        description: 'can selected different tests. options [ all, sanity_check, baseline_test, docker_source_combine]'
         required: false
         default:  'all'
         type: string
@@ -21,7 +21,7 @@ on:
         value: ${{ jobs.sanity_check.outputs.result }}
       baseline_test_result:
         description: "the step baseline test return-value"
-        value: ${{ jobs.baseline-test.outputs.result }}
+        value: ${{ jobs.baseline_test.outputs.result }}
       docker_source_combine_result:
         description: "the step docker source combine return-value"
         value: ${{ jobs.docker_source_combine.outputs.result }}
@@ -45,7 +45,7 @@ jobs:
     if: ${{ inputs.actions == 'all' ||  contains(inputs.actions, 'baseline_test') }}
     runs-on: ubuntu-latest
     outputs:
-      result: ${{ steps.baseline-test.outputs.result }}
+      result: ${{ steps.baseline_test.outputs.result }}
     strategy:
       matrix:
         node_version: [16.x]
@@ -65,9 +65,9 @@ jobs:
       JINA_HUBBLE_REGISTRY: http://localhost:3000
     steps:
       - uses: actions/checkout@v2
-      - name: baseline-test
+      - name: baseline_test
         uses: jina-ai/hub-integration/actions/baseline-test@master
-        id: baseline-test
+        id: baseline_test
         with: 
           python_version: ${{ matrix.python_version }}
           node_version: ${{ matrix.node_version }}
