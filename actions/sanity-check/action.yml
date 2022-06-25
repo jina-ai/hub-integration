@@ -36,7 +36,7 @@ runs:
       uses: actions/checkout@v2
       with:
         repository: jina-ai/jina
-        token: ${{ secrets.jina_dev_bot }}
+        token: ${{ inputs.jina_dev_bot }}
         ref: ${{ inputs.jina_ref }}
         path: ${{ inputs.action_jina_path }}
     
