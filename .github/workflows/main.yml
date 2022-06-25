@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       actions:
-        description: 'can selected different tests. options [ all, sanity_check, baseline_test, docker_source_combine]'
+        description: 'can selected different tests. options [ all, sanity_check, baseline_test]'
         required: false
         default:  'all'
         type: string
@@ -22,9 +22,6 @@ on:
       baseline_test_result:
         description: "the step baseline test return-value"
         value: ${{ jobs.baseline_test.outputs.result }}
-      docker_source_combine_result:
-        description: "the step docker source combine return-value"
-        value: ${{ jobs.docker_source_combine.outputs.result }}
 jobs:
 
   sanity_check:
@@ -75,17 +72,3 @@ jobs:
           node_env: 'testing'
           jina_hubble_registry: 'http://localhost:3000'
           jin_dev_bot: ${{ secrets.jin_dev_bot }}
-
-  docker_source_combine:
-    if: ${{ inputs.actions == 'all' ||  contains(inputs.actions, 'docker_source_combine') }}
-    runs-on: ubuntu-latest
-    outputs:
-      result: ${{ steps.docker_source_combine.outputs.result }}
-    steps:
-    - uses: actions/checkout@v2
-    - name: docker_source_combine
-      id: docker_source_combine
-      uses: jina-ai/hub-integration/actions/docker-source-combine@master
-      with:
-        python_version: '3.7'
-        jin_dev_bot: ${{ secrets.jin_dev_bot }}
