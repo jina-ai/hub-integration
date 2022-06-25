@@ -37,6 +37,7 @@ jobs:
         with:
           python-version: '3.7'
           jina_auth_token: ${{ secrets.jina_auth_token }}
+          jina_dev_bot: ${{ secrets.jina_dev_bot }}
 
   baseline_test:
     if: ${{ inputs.actions == 'all' ||  contains(inputs.actions, 'baseline_test') }}
