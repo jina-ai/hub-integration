@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: sanity_check
         id: sanity_heck
-        uses: jina-ai/hub-integration/actions/sanity-check@master
+        uses: jina-ai/hub-integration/actions/sanity-check@main
         with:
           python-version: '3.7'
           jina_auth_token: ${{ secrets.jina_auth_token }}
@@ -63,7 +63,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: baseline_test
-        uses: jina-ai/hub-integration/actions/baseline-test@master
+        uses: jina-ai/hub-integration/actions/baseline-test@main
         id: baseline_test
         with: 
           python_version: ${{ matrix.python_version }}
