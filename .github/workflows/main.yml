@@ -35,7 +35,6 @@ jobs:
         id: sanity_heck
         uses: jina-ai/hub-integration/actions/sanity-check@main
         with:
-          python-version: '3.7'
           jina_auth_token: ${{ secrets.jina_auth_token }}
           jina_dev_bot: ${{ secrets.jina_dev_bot }}
 
