@@ -9,7 +9,7 @@ on:
         default:  'all'
         type: string
     secrets: 
-        jin_dev_bot:
+        jina_dev_bot:
           description: "your pat and use it to pull hubble repo and jina repo"
           required: true
         jina_auth_token:
@@ -71,4 +71,4 @@ jobs:
           case_path: ${{ matrix.case_path }}
           node_env: 'testing'
           jina_hubble_registry: 'http://localhost:3000'
-          jin_dev_bot: ${{ secrets.jin_dev_bot }}
+          jina_dev_bot: ${{ secrets.jina_dev_bot }}
