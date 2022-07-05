@@ -30,7 +30,7 @@ runs:
     - name: Set up Python ${{ inputs.python_version }}
       uses: actions/setup-python@v2
       with:
-        python_version: ${{ inputs.python_version }}
+        python-version: ${{ inputs.python_version }}
 
     - name: Clone latest jina code
       uses: actions/checkout@v2
