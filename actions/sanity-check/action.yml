@@ -42,7 +42,7 @@ runs:
     
     - name: pip install jina
       working-directory: ${{ inputs.action_jina_path }}
-      run: pip install -e '.[standard]'
+      run: pip install -e -q '.[standard]'
       shell: bash
 
     - name: Run checks
@@ -50,13 +50,14 @@ runs:
         JINA_AUTH_TOKEN: ${{ inputs.jina_auth_token }}
         GITHUB_ACTION_PATH: ${{ github.action_path }}
       run: |
-          python ${{ github.action_path }}/src/check-docarray.py
           jina hub push --private --force-update SanityCheck --secret sanity@Check ${{ github.action_path }}/src/executors/SanityCheck
+          python ${{ github.action_path }}/src/check-docarray.py
           python ${{ github.action_path }}/src/check-executor-pull.py
           python ${{ github.action_path }}/src/check-artifact.py
           python ${{ github.action_path }}/src/check-user-api.py
           python ${{ github.action_path }}/src/docker-source-combine.py
       shell: bash
+
     - name: finally
       id: finally
       run: echo "::set-output name=result::0"
