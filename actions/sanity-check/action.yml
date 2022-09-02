@@ -42,7 +42,7 @@ runs:
     
     - name: pip install jina
       working-directory: ${{ inputs.action_jina_path }}
-      run: pip install -e -q '.[standard]'
+      run: pip install -e '.[standard]'
       shell: bash
 
     - name: Run checks
