@@ -25,5 +25,5 @@ def run_flow(f):
 
 
 run_flow(prod_demo('jinahub://SanityCheck:sanity@Check'))
-run_flow(prod_demo('jinahub+sandbox://SanityCheck:sanity@Check'))
+# run_flow(prod_demo('jinahub+sandbox://SanityCheck:sanity@Check'))
 run_flow(prod_demo('jinahub+docker://SanityCheck:sanity@Check'))
