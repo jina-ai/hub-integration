@@ -140,7 +140,7 @@ runs:
         env:
             NODE_ENV: ${{ inputs.node_env }}
             JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
-        run: pip install -e '.[standard]'
+        run: pip install -q '.[standard]'
         shell: bash
 
       - name: Clone latest case1-9 code
