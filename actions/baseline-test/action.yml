@@ -104,7 +104,7 @@ runs:
     - run: minikube tunnel --profile knative &> /dev/null &
       shell: bash
 
-    - run: docker network connect hubble_default knative
+    - run: docker network connect actions__hubble_default knative
       shell: bash
 
     - name: Init sandbox
@@ -197,7 +197,7 @@ runs:
     
     - name: Disconnect knative from hubble
       if: always()
-      run: docker network disconnect hubble_default knative
+      run: docker network disconnect actions__hubble_default knative
       shell: bash
 
     - name: Stop containers
