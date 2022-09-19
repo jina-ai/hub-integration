@@ -188,12 +188,14 @@ runs:
       working-directory: ${{ inputs.action_hubble_path }}
       shell: bash
 
-    - name: Archive server log results
+    - name: Archive logs
       if: failure()
       uses: actions/upload-artifact@v2
       with:
         name: logs
-        path: logs
+        path: |
+          logs/
+          *.log
     
     - name: Disconnect knative from hubble
       if: always()
