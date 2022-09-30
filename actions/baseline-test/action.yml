@@ -75,17 +75,12 @@ runs:
     - run: npm run build
       working-directory: ${{ inputs.action_hubble_path }}
       shell: bash
-    - run: npm run workspace-init --if-present
-      env:
-        NODE_ENV: ${{ inputs.node_env }}
-      working-directory: ${{ inputs.action_hubble_path }}
-      shell: bash
 
     - name: Start containers
       run: |
         mkdir -p /tmp/jina-uploaded /tmp/jina-hubble-temp
         sudo chown -R $USER:$USER /tmp/jina-uploaded /tmp/jina-hubble-temp
-        docker-compose -f "docker-compose.yml" up -d
+        docker-compose -f "docker-compose.yml" up --build -d
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
 
