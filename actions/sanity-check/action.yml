@@ -60,6 +60,6 @@ runs:
 
     - name: finally
       id: finally
-      run: echo "::set-output name=result::0"
+      run: echo "result=0" >> $GITHUB_OUTPUT
       shell: bash
   

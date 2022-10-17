@@ -168,7 +168,7 @@ runs:
 
     - name: extract id
       id: extract_id
-      run: cat logs/build.log | grep -oE "executor/[0-9a-z]*" | sed 's/\// /' | awk '{printf "::set-output name=id::%s\n", $2}'
+      run: cat logs/build.log | grep -oE "executor/[0-9a-z]*" | sed 's/\// /' | awk '{printf "id=%s\n >> $GITHUB_OUTPUT", $2}'
       shell: bash
 
     - name: run executor
@@ -205,5 +205,5 @@ runs:
 
     - name: finally
       id: finally
-      run: echo "::set-output name=result::0"
+      run: echo "result=0" >> $GITHUB_OUTPUT
       shell: bash
