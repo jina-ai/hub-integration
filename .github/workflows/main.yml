@@ -30,7 +30,7 @@ jobs:
     outputs:
       result: ${{ steps.sanity_check.outputs.result }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: sanity_check
         id: sanity_heck
         uses: jina-ai/hub-integration/actions/sanity-check@main
@@ -61,7 +61,7 @@ jobs:
       NODE_ENV: testing
       JINA_HUBBLE_REGISTRY: http://localhost:3000
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: baseline_test
         uses: jina-ai/hub-integration/actions/baseline-test@main
         id: baseline_test

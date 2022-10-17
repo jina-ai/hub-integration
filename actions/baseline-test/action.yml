@@ -65,7 +65,7 @@ runs:
       shell: bash
 
     - name: Use Node.js ${{ inputs.node_version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ inputs.node_version }}
 
@@ -119,7 +119,7 @@ runs:
         python-version: ${{ inputs.python_version }}
 
     - name: Clone latest jina code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: jina-ai/jina
         token: ${{ inputs.jina_dev_bot }}
@@ -134,7 +134,7 @@ runs:
       working-directory: ${{ inputs.action_jina_path }}
 
     - name: Clone latest case1-9 code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: jina-ai/executor-cases
         token: ${{ inputs.jina_dev_bot }}
