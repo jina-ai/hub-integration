@@ -26,14 +26,14 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ inputs.python_version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ inputs.python_version }}
 
     - name: Clone latest jina code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: jina-ai/jina
         token: ${{ inputs.jina_dev_bot }}
@@ -60,6 +60,6 @@ runs:
 
     - name: finally
       id: finally
-      run: echo "::set-output name=result::0"
+      run: echo "result=0" >> $GITHUB_OUTPUT
       shell: bash
   

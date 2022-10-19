@@ -65,7 +65,7 @@ runs:
       shell: bash
 
     - name: Use Node.js ${{ inputs.node_version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ inputs.node_version }}
 
@@ -114,12 +114,12 @@ runs:
       working-directory: ${{ inputs.action_hubble_path }}
 
     - name: Use Python ${{ inputs.python_version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ inputs.python_version }}
 
     - name: Clone latest jina code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: jina-ai/jina
         token: ${{ inputs.jina_dev_bot }}
@@ -134,7 +134,7 @@ runs:
       working-directory: ${{ inputs.action_jina_path }}
 
     - name: Clone latest case1-9 code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: jina-ai/executor-cases
         token: ${{ inputs.jina_dev_bot }}
@@ -168,7 +168,7 @@ runs:
 
     - name: extract id
       id: extract_id
-      run: cat logs/build.log | grep -oE "executor/[0-9a-z]*" | sed 's/\// /' | awk '{printf "::set-output name=id::%s\n", $2}'
+      run: cat logs/build.log | grep -oE "executor/[0-9a-z]*" | sed 's/\// /' | awk '{printf "id=%s\n >> $GITHUB_OUTPUT", $2}'
       shell: bash
 
     - name: run executor
@@ -205,5 +205,5 @@ runs:
 
     - name: finally
       id: finally
-      run: echo "::set-output name=result::0"
+      run: echo "result=0" >> $GITHUB_OUTPUT
       shell: bash
