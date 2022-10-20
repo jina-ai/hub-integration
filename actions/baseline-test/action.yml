@@ -114,7 +114,7 @@ runs:
       working-directory: ${{ inputs.action_hubble_path }}
 
     - name: Use Python ${{ inputs.python_version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ inputs.python_version }}
 
