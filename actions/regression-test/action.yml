@@ -13,8 +13,8 @@ inputs:
     description: "case_path"
     required: true
     default: "success/case1"
-  jina_dev_bot:
-    description: "jina_dev_bot"
+  github_token:
+    description: "github_token"
     required: true
   node_env:
     description: "node_env"
@@ -55,7 +55,7 @@ runs:
       uses: actions/checkout@v3
       with:
         repository: jina-ai/hubble
-        token: ${{ inputs.jina_dev_bot }}
+        token: ${{ inputs.github_token }}
         ref: ${{ inputs.hubble_ref }}
         path: ${{ inputs.action_hubble_path }}
         lfs: true
@@ -83,6 +83,8 @@ runs:
         docker-compose -f "docker-compose.yml" up --build -d
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
+      env:
+        NODE_ENV: ${{ inputs.node_env }}
 
     - name: Pre setup minikube
       run: |
@@ -106,6 +108,29 @@ runs:
       run: bin/init-sandbox.js
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
+      env:
+        NODE_ENV: ${{ inputs.node_env }}
+
+    - name: Create test user
+      run: |
+        bin/cli.js run modules/user/control/identity 
+        --target UserIdentityControl --resolve 
+        --call registerByNameAndPassword
+        --args testUser testPassword123
+        --quit
+      shell: bash
+      working-directory: ${{ inputs.action_hubble_path }}
+      env:
+        NODE_ENV: ${{ inputs.node_env }}
+    - name: Login test user
+      run: |
+        bin/cli.js call user.identity.passwordLogin
+        -i name=testUser password=testPassword123
+        -o output.json
+      shell: bash
+      working-directory: ${{ inputs.action_hubble_path }}
+      env:
+        NODE_ENV: ${{ inputs.node_env }}
 
     - run: npm run start:prod &> ../logs/server.log &
       env:
@@ -122,7 +147,7 @@ runs:
       uses: actions/checkout@v3
       with:
         repository: jina-ai/jina
-        token: ${{ inputs.jina_dev_bot }}
+        token: ${{ inputs.github_token }}
         ref: ${{ inputs.jina_ref }}
         path: ${{ inputs.action_jina_path }}
 
@@ -137,7 +162,7 @@ runs:
       uses: actions/checkout@v3
       with:
         repository: jina-ai/executor-cases
-        token: ${{ inputs.jina_dev_bot }}
+        token: ${{ inputs.github_token }}
         ref: refs/heads/main
         path: ${{ inputs.action_cases_path }}
 
