@@ -13,8 +13,8 @@ inputs:
     description: "case_path"
     required: true
     default: "success/case1"
-  github_token:
-    description: "github_token"
+  extended_github_token:
+    description: "extended_github_token"
     required: true
   node_env:
     description: "node_env"
@@ -55,7 +55,7 @@ runs:
       uses: actions/checkout@v3
       with:
         repository: jina-ai/hubble
-        token: ${{ inputs.github_token }}
+        token: ${{ inputs.extended_github_token }}
         ref: ${{ inputs.hubble_ref }}
         path: ${{ inputs.action_hubble_path }}
         lfs: true
@@ -147,7 +147,7 @@ runs:
       uses: actions/checkout@v3
       with:
         repository: jina-ai/jina
-        token: ${{ inputs.github_token }}
+        token: ${{ inputs.extended_github_token }}
         ref: ${{ inputs.jina_ref }}
         path: ${{ inputs.action_jina_path }}
 
@@ -162,7 +162,7 @@ runs:
       uses: actions/checkout@v3
       with:
         repository: jina-ai/executor-cases
-        token: ${{ inputs.github_token }}
+        token: ${{ inputs.extended_github_token }}
         ref: refs/heads/main
         path: ${{ inputs.action_cases_path }}
 

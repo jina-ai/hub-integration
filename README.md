@@ -38,8 +38,8 @@ jobs:
       actions: 'all' 
    
     secrets: 
-      # github personal auth token and use it to pull hubble repo and jina repo
-      github_token: ${{ secrets.JINA_DEV_BOT }}
+      # github token for pulling hubble repo and jina repo
+      extended_github_token: ${{ secrets.JINA_DEV_BOT }}
       # jina auth token and use it to run sanity_check
       jina_auth_token: ${{ secrets.JINA_AUTH_TOKEN }}
 ```

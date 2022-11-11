@@ -19,7 +19,7 @@ on:
         default: "refs/heads/master"
         type: string
     secrets:
-      github_token:
+      extended_github_token:
         description: "Your GitHub token. It's used for pulling hubble and jina repo"
         required: true
       jina_auth_token:
@@ -45,7 +45,7 @@ jobs:
         uses: ./actions/sanity-check/action.yml
         with:
           jina_auth_token: ${{ secrets.jina_auth_token }}
-          github_token: ${{ secrets.github_token }}
+          extended_github_token: ${{ secrets.extended_github_token }}
 
   regression_test:
     if: ${{ inputs.actions == 'all' ||  contains(inputs.actions, 'regression_test') }}
@@ -78,6 +78,6 @@ jobs:
           python_version: ${{ matrix.python_version }}
           node_version: ${{ matrix.node_version }}
           case_path: ${{ matrix.case_path }}
-          github_token: ${{ secrets.github_token }}
+          extended_github_token: ${{ secrets.extended_github_token }}
           hubble_ref: ${{inputs.hubble_ref}}
           jina_ref: ${{inputs.jina_ref}}

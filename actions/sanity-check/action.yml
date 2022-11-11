@@ -16,8 +16,8 @@ inputs:
     description: 'default jina path avoid conflict with the original repo'
     required: false
     default:  'actions__jina'
-  github_token: 
-    description: 'github_token'
+  extended_github_token: 
+    description: 'extended_github_token'
     required: true
 outputs:
   result:
@@ -36,7 +36,7 @@ runs:
       uses: actions/checkout@v3
       with:
         repository: jina-ai/jina
-        token: ${{ inputs.github_token }}
+        token: ${{ inputs.extended_github_token }}
         ref: ${{ inputs.jina_ref }}
         path: ${{ inputs.action_jina_path }}
     
