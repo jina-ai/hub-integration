@@ -131,6 +131,13 @@ runs:
       working-directory: ${{ inputs.action_hubble_path }}
       env:
         NODE_ENV: ${{ inputs.node_env }}
+    - name: Fake jina auth login
+      run: >
+        cat output.json | jq '{auth_token:.data.token}' > ~/.jina/config.json
+      shell: bash
+      working-directory: ${{ inputs.action_hubble_path }}
+      env:
+        NODE_ENV: ${{ inputs.node_env }}
 
     - run: npm run start:prod &> ../logs/server.log &
       env:
