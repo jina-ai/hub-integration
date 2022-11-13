@@ -229,14 +229,14 @@ runs:
       if: always()
       run: killall node
       shell: bash
+    - name: Disconnect knative from hubble
+      if: always()
+      run: docker network disconnect actions__hubble_default knative
+      shell: bash
     - name: Stop containers
       if: always()
       run: docker-compose -f "docker-compose.yml" down
       working-directory: ${{ inputs.action_hubble_path }}
-      shell: bash
-    - name: Disconnect knative from hubble
-      if: always()
-      run: docker network disconnect actions__hubble_default knative
       shell: bash
 
     - name: get docker compose logs
