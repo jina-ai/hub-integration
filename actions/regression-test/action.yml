@@ -225,10 +225,6 @@ runs:
       run: jina executor --uses jinahub://${{ steps.extract_id.outputs.id }} > logs/executor.log &
       shell: bash
 
-    - name: killall node
-      if: always()
-      run: killall node
-      shell: bash
     - name: Disconnect knative from hubble
       if: always()
       run: docker network disconnect actions__hubble_default knative
