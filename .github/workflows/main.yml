@@ -72,7 +72,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: regression_test
-        uses: jina-ai/hub-integration/actions/regression-test@refactor-regression-test
+        uses: jina-ai/hub-integration/actions/regression-test@main
         id: regression_test
         with:
           python_version: ${{ matrix.python_version }}
