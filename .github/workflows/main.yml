@@ -4,26 +4,35 @@ on:
   workflow_call:
     inputs:
       actions:
-        description: 'can selected different tests. options [ all, sanity_check, baseline_test]'
+        description: "You may run tests selectively. Options [ all, sanity_check, regression_test ]"
         required: false
-        default:  'all'
+        default: "regression_test"
         type: string
-    secrets: 
-        jina_dev_bot:
-          description: "your pat and use it to pull hubble repo and jina repo"
-          required: true
-        jina_auth_token:
-          description: "your jina auth token and use it to run sanity_check"
-          required: true
+      hubble_ref:
+        description: "hubble_ref"
+        required: false
+        default: "refs/heads/master"
+        type: string
+      jina_ref:
+        description: "jina_ref"
+        required: false
+        default: "refs/heads/master"
+        type: string
+    secrets:
+      extended_github_token:
+        description: "Your GitHub token. It's used for pulling hubble and jina repo"
+        required: true
+      jina_auth_token:
+        description: "Your jina auth token. It's used for running sanity_check in jina production environment"
+        required: true
     outputs:
       sanity_check_result:
-        description: "the step sanity check return-value"
+        description: "Result of sanity check"
         value: ${{ jobs.sanity_check.outputs.result }}
-      baseline_test_result:
-        description: "the step baseline test return-value"
-        value: ${{ jobs.baseline_test.outputs.result }}
+      regression_test_result:
+        description: "Result of regression test"
+        value: ${{ jobs.regression_test.outputs.result }}
 jobs:
-
   sanity_check:
     if: ${{ inputs.actions == 'all' ||  contains(inputs.actions, 'sanity_check') }}
     runs-on: ubuntu-latest
@@ -36,17 +45,17 @@ jobs:
         uses: jina-ai/hub-integration/actions/sanity-check@main
         with:
           jina_auth_token: ${{ secrets.jina_auth_token }}
-          jina_dev_bot: ${{ secrets.jina_dev_bot }}
+          extended_github_token: ${{ secrets.extended_github_token }}
 
-  baseline_test:
-    if: ${{ inputs.actions == 'all' ||  contains(inputs.actions, 'baseline_test') }}
+  regression_test:
+    if: ${{ inputs.actions == 'all' ||  contains(inputs.actions, 'regression_test') }}
     runs-on: ubuntu-latest
     outputs:
-      result: ${{ steps.baseline_test.outputs.result }}
+      result: ${{ steps.regression_test.outputs.result }}
     strategy:
       matrix:
-        node_version: [16.x]
-        python_version: ['3.7']
+        node_version: ['16.17']
+        python_version: ["3.7"]
         case_path:
           - success/case1
           - success/case2
@@ -62,13 +71,13 @@ jobs:
       JINA_HUBBLE_REGISTRY: http://localhost:3000
     steps:
       - uses: actions/checkout@v3
-      - name: baseline_test
-        uses: jina-ai/hub-integration/actions/baseline-test@main
-        id: baseline_test
-        with: 
+      - name: regression_test
+        uses: jina-ai/hub-integration/actions/regression-test@main
+        id: regression_test
+        with:
           python_version: ${{ matrix.python_version }}
           node_version: ${{ matrix.node_version }}
           case_path: ${{ matrix.case_path }}
-          node_env: 'testing'
-          jina_hubble_registry: 'http://localhost:3000'
-          jina_dev_bot: ${{ secrets.jina_dev_bot }}
+          extended_github_token: ${{ secrets.extended_github_token }}
+          hubble_ref: ${{inputs.hubble_ref}}
+          jina_ref: ${{inputs.jina_ref}}
