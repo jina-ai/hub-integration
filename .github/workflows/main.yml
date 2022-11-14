@@ -54,7 +54,7 @@ jobs:
       result: ${{ steps.regression_test.outputs.result }}
     strategy:
       matrix:
-        node_version: [16.x]
+        node_version: ['16.17']
         python_version: ["3.7"]
         case_path:
           - success/case1
