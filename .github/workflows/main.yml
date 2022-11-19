@@ -18,6 +18,16 @@ on:
         required: false
         default: "refs/heads/master"
         type: string
+      node_version:
+        description: "node_version"
+        required: false
+        default: "lts/*"
+        type: string
+      python_version:
+        description: "python_version"
+        required: false
+        default: "3.7"
+        type: string
     secrets:
       extended_github_token:
         description: "Your GitHub token. It's used for pulling hubble and jina repo"
@@ -54,8 +64,10 @@ jobs:
       result: ${{ steps.regression_test.outputs.result }}
     strategy:
       matrix:
-        node_version: ['16.17']
-        python_version: ["3.7"]
+        node_version:
+          - ${{inputs.node_version}}
+        python_version: 
+          - ${{inputs.python_version}}
         case_path:
           - success/case1
           - success/case2

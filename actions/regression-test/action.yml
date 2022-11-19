@@ -4,7 +4,7 @@ inputs:
   node_version:
     description: "node_version"
     required: true
-    default: "16.17"
+    default: "lts/*"
   python_version:
     description: python_version
     default: "3.7"
