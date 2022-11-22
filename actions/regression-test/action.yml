@@ -177,6 +177,7 @@ runs:
     - name: pip install jina
       env:
         JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        JINA_OPTOUT_TELEMETRY: 'true'
       run: pip install -q '.[standard]'
       shell: bash
       working-directory: ${{ inputs.action_jina_path }}
@@ -209,6 +210,7 @@ runs:
     - name: test case - ${{ inputs.case_path }}
       env:
         JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        JINA_OPTOUT_TELEMETRY: 'true'
       id: do_test
       run: jina hub push ${{ inputs.case_path }} | tee ../logs/build.log
       working-directory: ${{ inputs.action_cases_path }}
@@ -222,6 +224,7 @@ runs:
     - name: run executor
       env:
         JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
+        JINA_OPTOUT_TELEMETRY: 'true'
       run: jina executor --uses jinahub://${{ steps.extract_id.outputs.id }} > logs/executor.log &
       shell: bash
 

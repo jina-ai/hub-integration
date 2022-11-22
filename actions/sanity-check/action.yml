@@ -41,6 +41,8 @@ runs:
         path: ${{ inputs.action_jina_path }}
     
     - name: pip install jina
+      env:
+        JINA_OPTOUT_TELEMETRY: 'true'
       working-directory: ${{ inputs.action_jina_path }}
       run: pip install -q '.[standard]'
       shell: bash
@@ -49,6 +51,7 @@ runs:
       env:
         JINA_AUTH_TOKEN: ${{ inputs.jina_auth_token }}
         GITHUB_ACTION_PATH: ${{ github.action_path }}
+        JINA_OPTOUT_TELEMETRY: 'true'
       run: |
           jina hub push --private --force-update SanityCheck --secret sanity@Check ${{ github.action_path }}/src/executors/SanityCheck
           python ${{ github.action_path }}/src/check-docarray.py
