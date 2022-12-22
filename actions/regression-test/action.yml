@@ -218,6 +218,7 @@ runs:
     - name: test
       if: failure()
       run: ls && cat ./hubble.log
+      working-directory: ${{ inputs.action_hubble_path }}
       shell: bash
 
     - name: Archive logs
@@ -227,7 +228,7 @@ runs:
         name: logs
         path: |
           logs/
-          *.log
+          ${{ inputs.action_hubble_path }}/*.log
 
     - name: finally
       id: finally
