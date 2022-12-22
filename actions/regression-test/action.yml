@@ -215,6 +215,10 @@ runs:
       working-directory: ${{ inputs.action_hubble_path }}
       shell: bash
 
+    - name: test
+      run: ls && cat ./hubble.log
+      shell: bash
+
     - name: Archive logs
       if: failure()
       uses: actions/upload-artifact@v3
