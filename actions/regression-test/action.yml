@@ -86,31 +86,6 @@ runs:
       env:
         NODE_ENV: ${{ inputs.node_env }}
 
-    - name: Pre setup minikube
-      run: |
-        mkdir -p ~/.minikube/certs
-        mkdir -p ~/.minikube/files/etc/docker
-        cp .docker/dind/ca-bundle.pem ~/.minikube/certs/hubble-ca.pem
-        cp .docker/minikube/daemon.json ~/.minikube/files/etc/docker/daemon.json
-      shell: bash
-      working-directory: ${{ inputs.action_hubble_path }}
-
-    - name: setup knative
-      uses: mapleeit/actions-setup-knative@main
-
-    - run: minikube tunnel --profile knative &> /dev/null &
-      shell: bash
-
-    - run: docker network connect actions__hubble_default knative
-      shell: bash
-
-    - name: Init sandbox
-      run: node bin/init-sandbox.js > ../logs/init-sandbox.log
-      shell: bash
-      working-directory: ${{ inputs.action_hubble_path }}
-      env:
-        NODE_ENV: ${{ inputs.node_env }}
-
     - name: Create test user
       run: >
         node bin/cli.js run modules/user/control/identity 
@@ -218,19 +193,14 @@ runs:
 
     - name: extract id
       id: extract_id
-      run: cat logs/build.log | grep -oE "executor/[0-9a-z]*" | sed 's/\// /' | awk '{printf "id=%s\n >> $GITHUB_OUTPUT", $2}'
+      run: cat logs/build.log | grep -oE "executor/[0-9a-z]*" | sed 's/\// /' | awk '{printf "id=%s", $2}' >> $GITHUB_OUTPUT
       shell: bash
 
     - name: run executor
       env:
         JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         JINA_OPTOUT_TELEMETRY: 'true'
-      run: jina executor --uses jinahub://${{ steps.extract_id.outputs.id }} > logs/executor.log &
-      shell: bash
-
-    - name: Disconnect knative from hubble
-      if: always()
-      run: docker network disconnect actions__hubble_default knative
+      run: jina executor --uses jinaai://${{ steps.extract_id.outputs.id }} > logs/executor.log &
       shell: bash
 
     - name: get docker compose logs
