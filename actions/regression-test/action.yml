@@ -93,6 +93,7 @@ runs:
       env:
         NODE_ENV: ${{ inputs.node_env }}
         HUBBLE_DISABLE_SANDBOX: 'true'
+        HUBBLE_DISABLE_PAYMENT: 'true'
     - name: Login test user
       run: >
         node bin/cli.js call user.identity.passwordLogin
@@ -103,6 +104,7 @@ runs:
       env:
         NODE_ENV: ${{ inputs.node_env }}
         HUBBLE_DISABLE_SANDBOX: 'true'
+        HUBBLE_DISABLE_PAYMENT: 'true'
     - name: Fake jina auth login
       run: |
         mkdir -p ~/.jina
@@ -112,12 +114,14 @@ runs:
       env:
         NODE_ENV: ${{ inputs.node_env }}
         HUBBLE_DISABLE_SANDBOX: 'true'
+        HUBBLE_DISABLE_PAYMENT: 'true'
 
     - run: >
         node bin/watcher.js > ./watcher.log &
       env:
         NODE_ENV: ${{ inputs.node_env }}
         HUBBLE_DISABLE_SANDBOX: 'true'
+        HUBBLE_DISABLE_PAYMENT: 'true'
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
 
@@ -125,6 +129,7 @@ runs:
       env:
         NODE_ENV: ${{ inputs.node_env }}
         HUBBLE_DISABLE_SANDBOX: 'true'
+        HUBBLE_DISABLE_PAYMENT: 'true'
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
 
@@ -134,6 +139,7 @@ runs:
       env:
         NODE_ENV: ${{ inputs.node_env }}
         HUBBLE_DISABLE_SANDBOX: 'true'
+        HUBBLE_DISABLE_PAYMENT: 'true'
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
 
