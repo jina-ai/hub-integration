@@ -85,6 +85,8 @@ runs:
       working-directory: ${{ inputs.action_hubble_path }}
       env:
         NODE_ENV: ${{ inputs.node_env }}
+        
+    - run: sleep 10
 
     - name: Create test user
       run: >
