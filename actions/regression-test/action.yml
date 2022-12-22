@@ -86,8 +86,22 @@ runs:
       env:
         NODE_ENV: ${{ inputs.node_env }}
         
-    - name: Wait Docker compose ready
-      run: sleep 300
+    - name: Pre setup minikube
+      run: |
+        mkdir -p ~/.minikube/certs
+        mkdir -p ~/.minikube/files/etc/docker
+        cp .docker/dind/ca-bundle.pem ~/.minikube/certs/hubble-ca.pem
+        cp .docker/minikube/daemon.json ~/.minikube/files/etc/docker/daemon.json
+      shell: bash
+      working-directory: ${{ inputs.action_hubble_path }}
+
+    - name: setup knative
+      uses: mapleeit/actions-setup-knative@main
+
+    - run: minikube tunnel --profile knative &> /dev/null &
+      shell: bash
+
+    - run: docker network connect actions__hubble_default knative
       shell: bash
 
     - name: Create test user
@@ -205,6 +219,11 @@ runs:
         JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         JINA_OPTOUT_TELEMETRY: 'true'
       run: jina executor --uses jinaai://${{ steps.extract_id.outputs.id }} > logs/executor.log &
+      shell: bash
+      
+    - name: Disconnect knative from hubble
+      if: always()
+      run: docker network disconnect actions__hubble_default knative
       shell: bash
 
     - name: get docker compose logs
