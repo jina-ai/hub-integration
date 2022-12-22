@@ -60,15 +60,6 @@ runs:
         path: ${{ inputs.action_hubble_path }}
         lfs: true
 
-    - name: mk logs folder
-      run: mkdir logs
-      shell: bash
-
-    - name: Use Node.js ${{ inputs.node_version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ inputs.node_version }}
-
     - name: Start containers
       run: |
         mkdir -p /tmp/jina-uploaded /tmp/jina-hubble-temp
@@ -79,6 +70,10 @@ runs:
       env:
         NODE_ENV: ${{ inputs.node_env }}
 
+    - name: Use Node.js ${{ inputs.node_version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node_version }}
     - run: yarn install --frozen-lockfile
       working-directory: ${{ inputs.action_hubble_path }}
       shell: bash
@@ -116,13 +111,13 @@ runs:
         NODE_ENV: ${{ inputs.node_env }}
 
     - run: >
-        node bin/watcher.js > ../logs/watcher.log &
+        node bin/watcher.js > ./watcher.log &
       env:
         NODE_ENV: ${{ inputs.node_env }}
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
 
-    - run: npm run start:prod > ../logs/server.log &
+    - run: npm run start:prod > ./server.log &
       env:
         NODE_ENV: ${{ inputs.node_env }}
       shell: bash
@@ -130,7 +125,7 @@ runs:
 
     - run: >
         node bin/cli.js run modules/executor/worker/container-builder
-        --call serviceReady > ../logs/worker.log &
+        --call serviceReady > ./worker.log &
       env:
         NODE_ENV: ${{ inputs.node_env }}
       shell: bash
@@ -187,25 +182,27 @@ runs:
         JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         JINA_OPTOUT_TELEMETRY: 'true'
       id: do_test
-      run: jina hub push ${{ inputs.case_path }} | tee ../logs/build.log
+      run: jina hub push ${{ inputs.case_path }} | tee ./build.log
       working-directory: ${{ inputs.action_cases_path }}
       shell: bash
 
     - name: extract id
       id: extract_id
-      run: cat logs/build.log | grep -oE "executor/[0-9a-z]*" | sed 's/\// /' | awk '{printf "id=%s", $2}' >> $GITHUB_OUTPUT
+      run: cat ./build.log | grep -oE "executor/[0-9a-z]*" | sed 's/\// /' | awk '{printf "id=%s", $2}' >> $GITHUB_OUTPUT
+      working-directory: ${{ inputs.action_cases_path }}
       shell: bash
 
     - name: run executor
       env:
         JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         JINA_OPTOUT_TELEMETRY: 'true'
-      run: jina executor --uses jinaai://${{ steps.extract_id.outputs.id }} > logs/executor.log &
+      run: jina executor --uses jinaai://${{ steps.extract_id.outputs.id }} > ./executor.log &
+      working-directory: ${{ inputs.action_cases_path }}
       shell: bash
 
     - name: get docker compose logs
       if: always()
-      run: docker-compose logs -t > ../logs/docker-compose.log
+      run: docker-compose logs -t > ./docker-compose.log
       working-directory: ${{ inputs.action_hubble_path }}
       shell: bash
 
@@ -215,19 +212,13 @@ runs:
       working-directory: ${{ inputs.action_hubble_path }}
       shell: bash
 
-    - name: test
-      if: failure()
-      run: ls && cat ./hubble.log
-      working-directory: ${{ inputs.action_hubble_path }}
-      shell: bash
-
     - name: Archive logs
       if: failure()
       uses: actions/upload-artifact@v3
       with:
         name: logs
         path: |
-          logs/
+          ${{ inputs.action_cases_path }}/*.log
           ${{ inputs.action_hubble_path }}/*.log
 
     - name: finally
