@@ -216,6 +216,7 @@ runs:
       shell: bash
 
     - name: test
+      if: failure()
       run: ls && cat ./hubble.log
       shell: bash
 
