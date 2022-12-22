@@ -94,7 +94,7 @@ runs:
         NODE_ENV: ${{ inputs.node_env }}
         HUBBLE_DISABLE_SANDBOX: 'true'
         HUBBLE_DISABLE_PAYMENT: 'true'
-        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.extended_github_token }}
     - name: Login test user
       run: >
         node bin/cli.js call user.identity.passwordLogin
@@ -106,7 +106,7 @@ runs:
         NODE_ENV: ${{ inputs.node_env }}
         HUBBLE_DISABLE_SANDBOX: 'true'
         HUBBLE_DISABLE_PAYMENT: 'true'
-        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.extended_github_token }}
     - name: Fake jina auth login
       run: |
         mkdir -p ~/.jina
@@ -124,7 +124,7 @@ runs:
         NODE_ENV: ${{ inputs.node_env }}
         HUBBLE_DISABLE_SANDBOX: 'true'
         HUBBLE_DISABLE_PAYMENT: 'true'
-        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.extended_github_token }}
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
 
@@ -133,7 +133,7 @@ runs:
         NODE_ENV: ${{ inputs.node_env }}
         HUBBLE_DISABLE_SANDBOX: 'true'
         HUBBLE_DISABLE_PAYMENT: 'true'
-        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.extended_github_token }}
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
 
