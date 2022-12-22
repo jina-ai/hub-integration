@@ -208,7 +208,7 @@ runs:
       env:
         JINA_HUBBLE_REGISTRY: ${{ inputs.jina_hubble_registry }}
         JINA_OPTOUT_TELEMETRY: 'true'
-      run: jina executor --uses jinaai://${{ steps.extract_id.outputs.id }} > ./executor.log &
+      run: jina executor --uses jinaai://testUser/${{ steps.extract_id.outputs.id }} > ./executor.log &
       working-directory: ${{ inputs.action_cases_path }}
       shell: bash
 
