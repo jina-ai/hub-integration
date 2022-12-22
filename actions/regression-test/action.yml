@@ -69,13 +69,6 @@ runs:
       with:
         node-version: ${{ inputs.node_version }}
 
-    - run: yarn install --frozen-lockfile
-      working-directory: ${{ inputs.action_hubble_path }}
-      shell: bash
-    - run: npm run build
-      working-directory: ${{ inputs.action_hubble_path }}
-      shell: bash
-
     - name: Start containers
       run: |
         mkdir -p /tmp/jina-uploaded /tmp/jina-hubble-temp
@@ -85,10 +78,13 @@ runs:
       working-directory: ${{ inputs.action_hubble_path }}
       env:
         NODE_ENV: ${{ inputs.node_env }}
-        
-    # - name: Wait Docker compose ready
-    #   run: sleep 300
-    #   shell: bash
+
+    - run: yarn install --frozen-lockfile
+      working-directory: ${{ inputs.action_hubble_path }}
+      shell: bash
+    - run: npm run build
+      working-directory: ${{ inputs.action_hubble_path }}
+      shell: bash
 
     - name: Create test user
       run: >
@@ -96,22 +92,20 @@ runs:
         --target UserIdentityControl --resolve 
         --call registerByNameAndPassword 
         --args testUser testPassword123 
-        --quit > ../logs/create-user.log
+        --quit
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
       env:
         NODE_ENV: ${{ inputs.node_env }}
-        LOG_LEVEL: debug
     - name: Login test user
       run: >
         node bin/cli.js call user.identity.passwordLogin
         -i name=testUser password=testPassword123
-        -o output.json > ../logs/login.log
+        -o output.json
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
       env:
         NODE_ENV: ${{ inputs.node_env }}
-        LOG_LEVEL: debug
     - name: Fake jina auth login
       run: |
         mkdir -p ~/.jina
@@ -125,7 +119,6 @@ runs:
         node bin/watcher.js > ../logs/watcher.log &
       env:
         NODE_ENV: ${{ inputs.node_env }}
-        LOG_LEVEL: debug
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
 
