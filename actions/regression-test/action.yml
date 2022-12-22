@@ -96,7 +96,7 @@ runs:
         --target UserIdentityControl --resolve 
         --call registerByNameAndPassword 
         --args testUser testPassword123 
-        --quit &> ../logs/create-user.log
+        --quit > ../logs/create-user.log
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
       env:
@@ -106,7 +106,7 @@ runs:
       run: >
         node bin/cli.js call user.identity.passwordLogin
         -i name=testUser password=testPassword123
-        -o output.json &> ../logs/login.log
+        -o output.json > ../logs/login.log
       shell: bash
       working-directory: ${{ inputs.action_hubble_path }}
       env:
