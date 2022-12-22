@@ -87,7 +87,7 @@ runs:
         NODE_ENV: ${{ inputs.node_env }}
         
     - name: Wait Docker compose ready
-      run: sleep 30
+      run: sleep 60
       shell: bash
 
     - name: Create test user
