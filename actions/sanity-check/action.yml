@@ -61,7 +61,7 @@ runs:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
         JINA_OPTOUT_TELEMETRY: 'true'
       run: |
-          jina hub push --private --force-update SanityCheck --secret sanity@Check ${{ github.action_path }}/src/executors/SanityCheck
+          jina hub push --private --force-update SanityCheck ${{ github.action_path }}/src/executors/SanityCheck
           python ${{ github.action_path }}/src/check-docarray.py
           python ${{ github.action_path }}/src/check-executor-pull.py
           python ${{ github.action_path }}/src/check-artifact.py
