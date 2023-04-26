@@ -55,10 +55,6 @@ runs:
           jina auth login
       shell: bash
 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      env:
-        JINA_AUTH_TOKEN: ${{ inputs.jina_auth_token }}
     - name: Run checks
       env:
         JINA_AUTH_TOKEN: ${{ inputs.jina_auth_token }}
