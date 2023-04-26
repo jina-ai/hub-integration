@@ -62,6 +62,7 @@ runs:
         JINA_OPTOUT_TELEMETRY: 'true'
       run: |
           jina hub push --private --force-update SanityCheck ${{ github.action_path }}/src/executors/SanityCheck
+          jina hub pull jinahub+docker://SanityCheck:sanity@Check
           python ${{ github.action_path }}/src/check-docarray.py
           python ${{ github.action_path }}/src/check-executor-pull.py
           python ${{ github.action_path }}/src/check-artifact.py
