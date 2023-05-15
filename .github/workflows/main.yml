@@ -75,6 +75,8 @@ jobs:
           # - success/case4
           - success/case5
           - success/case6
+          - success/case6-2
+          - success/case6-3
           - success/case7
           - success/case8
           - success/case9
