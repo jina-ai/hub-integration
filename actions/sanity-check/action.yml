@@ -61,13 +61,12 @@ runs:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
         JINA_OPTOUT_TELEMETRY: 'true'
       run: |
-          # jina hub push --private --force-update SanityCheck ${{ github.action_path }}/src/executors/SanityCheck
-          # jina hub pull jinahub+docker://SanityCheck:sanity@Check
+          jina hub push --private --force-update SanityCheck ${{ github.action_path }}/src/executors/SanityCheck
+          jina hub pull jinahub+docker://SanityCheck:sanity@Check
           python ${{ github.action_path }}/src/check-docarray.py
-          # python ${{ github.action_path }}/src/check-executor-pull.py
+          python ${{ github.action_path }}/src/check-executor-pull.py
           python ${{ github.action_path }}/src/check-artifact.py
           python ${{ github.action_path }}/src/check-user-api.py
-          python ${{ github.action_path }}/src/docker-source-combine.py
       shell: bash
 
     - name: finally
