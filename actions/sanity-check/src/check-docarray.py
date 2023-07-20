@@ -1,15 +1,16 @@
-from docarray import DocumentArray, Document
+from docarray import BaseDoc, DocList
 
 def docarray_check():
-    d = Document(text='hello')
-    d2 = Document(text='world')
+    class SimpleDoc(BaseDoc):
+        text: str
 
-    da = DocumentArray([d, d2])
-    r = da.push(name='sanity_check_test', show_progress=True)
+    docs = DocList[SimpleDoc]([SimpleDoc(text='hello'), SimpleDoc(text='world')])
+
+    r = docs.push(url='jac://sanity_check_test', show_progress=True)
     assert r.get('name') == 'sanity_check_test'
 
-    da2 = DocumentArray.pull(name='sanity_check_test', show_progress=True)
-    assert da2.texts == ['hello', 'world']
-
+    r = DocList[SimpleDoc].pull(url='jac://sanity_check_test', show_progress=True, local_cache=False)
+    assert r[0].text == 'hello'
+    assert r[1].text == 'world'
 
 docarray_check()

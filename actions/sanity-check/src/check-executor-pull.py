@@ -1,6 +1,9 @@
 from jina import Flow
 
-from docarray import Document
+from docarray import BaseDoc, DocList
+
+class SimpleDoc(BaseDoc):
+    text: str
 
 def prod_demo(uses: str):
     f = Flow().add(
@@ -15,10 +18,10 @@ def run_flow(f):
         f.post(
             "/get-tensor",
             [
-                Document(text="vvvv"),
-                Document(text="aaaa"),
-                Document(text="dddddd aaaa"),
-                Document(text="dddddd bbbb"),
+                SimpleDoc(text="vvvv"),
+                SimpleDoc(text="aaaa"),
+                SimpleDoc(text="dddddd aaaa"),
+                SimpleDoc(text="dddddd bbbb"),
             ],
         )
         f.close()
