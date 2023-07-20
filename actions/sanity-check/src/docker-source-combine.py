@@ -1,4 +1,3 @@
-from docarray import Document
 from jina import Flow, requests, Executor
 
 class MyExecutor(Executor):
@@ -17,4 +16,4 @@ f = Flow().add(
 )
 
 with f:
-  f.post('/', Document())
+  f.post('/')
